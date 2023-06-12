@@ -1,0 +1,40 @@
+@import "./theme/site.css";
+
+:root {
+  --theme-color-primary: #2c80fd;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.tm-gap-small {
+  gap: 0.5rem;
+}
+
+.tm-gap-medium {
+  gap: 1rem;
+}
+
+.tm-gap-large {
+  gap: 2rem;
+}
