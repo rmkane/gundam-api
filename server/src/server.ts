@@ -33,9 +33,12 @@ db.serialize(() => {
 });
 
 setTimeout(3000).then(() => {
-  db.get('SELECT username, email FROM login', (error, row) => {
-    console.log(`${row.username} ${row.email}`);
-  });
+  db.get(
+    'SELECT username, email FROM login',
+    (error, row: { username: string; email: string }) => {
+      console.log(`${row.username} ${row.email}`);
+    },
+  );
 });
 
 const parseIntOrDefault = (
