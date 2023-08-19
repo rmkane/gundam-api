@@ -42,6 +42,7 @@ function Contact() {
               name="name"
               type="text"
               autoComplete="off"
+              required
             />
           </div>
         </div>
@@ -56,6 +57,7 @@ function Contact() {
               name="email"
               type="email"
               autoComplete="off"
+              required
             />
           </div>
         </div>
@@ -70,6 +72,7 @@ function Contact() {
               name="subject"
               type="text"
               autoComplete="off"
+              required
             />
           </div>
         </div>

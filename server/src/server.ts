@@ -125,8 +125,13 @@ app.post('/addNotification', (req: Request, res: Response) => {
   res.send(notificationService.addNotification(notification.content));
 });
 
-app.get('/notifications', (_req: Request, res: Response) => {
-  res.send(notificationService.retrieveAllNotifications());
+app.get('/notifications', async (_req: Request, res: Response) => {
+  await setTimeout(5000); // Wait 5 seconds...
+  res.send(
+    notificationService
+      .retrieveAllNotifications()
+      .sort((a, b) => b.dateCreated - a.dateCreated),
+  );
 });
 
 app.post('/email', (req: Request, res: Response) => {
@@ -165,11 +170,11 @@ app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
 });
 
-await setTimeout(2000);
+await setTimeout(1000);
 notificationService.addNotification('Hello World');
-await setTimeout(100);
+await setTimeout(1000);
 notificationService.addNotification('Hello World');
-await setTimeout(100);
+await setTimeout(1000);
 notificationService.addNotification('Hello World');
-await setTimeout(100);
+await setTimeout(1000);
 notificationService.addNotification('Hello World');
