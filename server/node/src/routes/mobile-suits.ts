@@ -1,5 +1,4 @@
-import { OpenAPIHono } from '@hono/zod-openapi'
-import { createRoute } from '@hono/zod-openapi'
+import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import { Context } from 'hono'
 import { z } from 'zod'
 
