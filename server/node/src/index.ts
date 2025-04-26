@@ -13,9 +13,10 @@ app.route('/api/v1', v1Router)
 
 const port = process.env.PORT || 3000
 
+// eslint-disable-next-line no-console
 console.log(`Server is running on port ${port}`)
 
 serve({
   fetch: app.fetch,
   port: Number(port)
-}) 
+})

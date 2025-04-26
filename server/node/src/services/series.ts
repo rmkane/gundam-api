@@ -1,4 +1,4 @@
-import { eq, isNull, and } from 'drizzle-orm'
+import { eq, isNull } from 'drizzle-orm'
 import { z } from 'zod'
 import { db } from '../db/index.js'
 import { series } from '../db/schemas/index.js'
@@ -15,7 +15,7 @@ export const getSeries = async () => {
 
 export const getSeriesById = async (id: number) => {
   const result = await db.select().from(series).where(eq(series.id, id))
-  
+
   if (result.length === 0) {
     return { error: 'Series not found', status: 404 }
   }
@@ -24,7 +24,7 @@ export const getSeriesById = async (id: number) => {
   if (seriesItem.deletedAt) {
     return { error: 'Series has been deleted', status: 410 }
   }
-  
+
   return { data: formatDates(seriesItem), status: 200 }
 }
 
@@ -35,8 +35,8 @@ export const createSeries = async (data: CreateSeriesData) => {
 
   const result = await db.insert(series).values(data).returning()
   const newSeries = result[0]
-  return { 
-    data: formatDates(newSeries), 
+  return {
+    data: formatDates(newSeries),
     status: 201,
     headers: { 'Location': `/api/v1/series/${newSeries.id}` }
   }
@@ -80,4 +80,4 @@ export const deleteSeries = async (id: number) => {
   }
 
   return { data: formatDates(result[0]), status: 200 }
-} 
+}

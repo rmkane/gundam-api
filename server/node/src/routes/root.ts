@@ -43,4 +43,4 @@ rootRouter.get('/health', (c: Context) => {
     status: 'ok',
     timestamp: new Date().toISOString()
   })
-}) 
+})

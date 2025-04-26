@@ -2,8 +2,8 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { z } from 'zod'
 import { createRoute } from '@hono/zod-openapi'
 import { Context } from 'hono'
-import { MobileSuitSchema, CreateMobileSuitSchema, UpdateMobileSuitSchema, MobileSuitListResponseSchema, MobileSuitResponseSchema, CreateMobileSuitResponseSchema, UpdateMobileSuitResponseSchema } from '../schemas/index.js'
-import { NotFoundResponseSchema, BadRequestResponseSchema, GoneResponseSchema, InternalServerErrorResponseSchema, MessageResponseSchema } from '../schemas/responses.js'
+import { CreateMobileSuitSchema, UpdateMobileSuitSchema, MobileSuitListResponseSchema, MobileSuitResponseSchema, CreateMobileSuitResponseSchema, UpdateMobileSuitResponseSchema } from '../schemas/index.js'
+import { NotFoundResponseSchema, BadRequestResponseSchema, GoneResponseSchema, InternalServerErrorResponseSchema } from '../schemas/responses.js'
 import * as mobileSuitService from '../services/mobile-suit.js'
 
 const router = new OpenAPIHono()
@@ -207,7 +207,7 @@ const deleteMobileSuitRoute = createRoute({
 const getMobileSuitsController = async (c: Context) => {
   const seriesId = c.req.query('seriesId')
   const result = await mobileSuitService.getMobileSuits(seriesId ? Number(seriesId) : undefined)
-  
+
   if (result.error) {
     return c.json({ error: result.error }, result.status as 404)
   }
@@ -215,14 +215,14 @@ const getMobileSuitsController = async (c: Context) => {
   if (!result.data) {
     return c.json({ error: 'No mobile suits found' }, 404)
   }
-  
+
   return c.json({data: result.data, meta: {page: 1, pageSize: 10, total: result.data.length}}, 200)
 }
 
 const getMobileSuitByIdController = async (c: Context) => {
   const id = Number(c.req.param('id'))
   const result = await mobileSuitService.getMobileSuitById(id)
-  
+
   if (result.error) {
     return c.json({ error: result.error }, result.status as 404 | 410)
   }
@@ -230,22 +230,22 @@ const getMobileSuitByIdController = async (c: Context) => {
   if (!result.data) {
     return c.json({ error: 'Mobile suit not found' }, 404)
   }
-  
+
   return c.json({data: result.data, meta: {id: result.data.id, createdAt: result.data.createdAt, updatedAt: result.data.updatedAt}}, 200)
 }
 
 const createMobileSuitController = async (c: Context) => {
   const body = await c.req.json()
   const result = await mobileSuitService.createMobileSuit(body)
-  
+
   if (result.error) {
     return c.json({ error: result.error }, 400)
   }
-  
+
   if (!result.data) {
     return c.json({ error: 'Failed to create mobile suit' }, 500)
   }
-  
+
   return c.json({data: result.data, meta: {createdAt: result.data.createdAt}} , 201, {
     'Location': `/api/v1/mobile-suits/${result.data.id}`
   })
@@ -255,26 +255,26 @@ const updateMobileSuitController = async (c: Context) => {
   const id = Number(c.req.param('id'))
   const body = await c.req.json()
   const result = await mobileSuitService.updateMobileSuit(id, body)
-  
+
   if (result.error) {
     return c.json({ error: result.error }, result.status as 400 | 404 | 410)
   }
-  
+
   if (!result.data) {
     return c.json({ error: 'Mobile suit not found' }, 404)
   }
-  
+
   return c.json({data: result.data, meta: {updatedAt: result.data.updatedAt}}, 200)
 }
 
 const deleteMobileSuitController = async (c: Context) => {
   const id = Number(c.req.param('id'))
   const result = await mobileSuitService.deleteMobileSuit(id)
-  
+
   if (result.error) {
     return c.json({ error: result.error }, 404)
   }
-  
+
   return c.json({ message: 'Mobile suit deleted successfully' }, 200)
 }
 
@@ -285,4 +285,4 @@ router.openapi(createMobileSuitRoute, createMobileSuitController)
 router.openapi(updateMobileSuitRoute, updateMobileSuitController)
 router.openapi(deleteMobileSuitRoute, deleteMobileSuitController)
 
-export default router 
+export default router
