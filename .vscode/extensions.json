@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "DavidAnson.vscode-markdownlint",
+    "dbaeumer.vscode-eslint",
+    "docker.docker",
+    "editorconfig.editorconfig",
+    "esbenp.prettier-vscode",
+    "ms-vscode.makefile-tools",
+    "rvest.vs-code-prettier-eslint",
+    "yzhang.markdown-all-in-one"
+  ]
+}
