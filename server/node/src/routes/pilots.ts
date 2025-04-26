@@ -142,7 +142,7 @@ const updatePilotRoute = createRoute({
   description: 'Update a pilot',
   request: {
     params: z.object({
-      id: z.string().transform(Number),
+      id: NumberParamSchema,
     }),
     body: {
       content: {
@@ -195,7 +195,7 @@ const deletePilotRoute = createRoute({
   description: 'Delete a pilot (soft delete)',
   request: {
     params: z.object({
-      id: z.string().transform(Number),
+      id: NumberParamSchema,
     }),
   },
   responses: {

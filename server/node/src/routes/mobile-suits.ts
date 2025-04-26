@@ -195,7 +195,7 @@ const deleteMobileSuitRoute = createRoute({
   description: 'Delete a mobile suit (soft delete)',
   request: {
     params: z.object({
-      id: z.string().transform(Number),
+      id: NumberParamSchema,
     }),
   },
   responses: {
