@@ -2,8 +2,8 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { z } from 'zod'
 import { createRoute } from '@hono/zod-openapi'
 import { db } from '../db/index.js'
-import { pilot } from '../db/schema.js'
-import { eq, isNull } from 'drizzle-orm'
+import { pilot, series } from '../db/schema.js'
+import { eq, isNull, and } from 'drizzle-orm'
 
 const router = new OpenAPIHono()
 
@@ -34,6 +34,11 @@ const getPilotsRoute = createRoute({
   path: '/',
   tags: ['Pilots'],
   description: 'Get all pilots',
+  request: {
+    query: z.object({
+      seriesId: z.string().transform(Number).optional()
+    })
+  },
   responses: {
     200: {
       content: {
@@ -42,6 +47,16 @@ const getPilotsRoute = createRoute({
         }
       },
       description: 'List of all pilots'
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Series not found'
     }
   }
 })
@@ -227,8 +242,27 @@ const formatDates = (item: any) => ({
 
 // Route handlers
 router.openapi(getPilotsRoute, async (c) => {
-  const allPilots = await db.select().from(pilot).where(isNull(pilot.deletedAt))
-  return c.json(allPilots.map(formatDates))
+  const seriesId = c.req.query('seriesId')
+  const conditions = [isNull(pilot.deletedAt)]
+  
+  if (seriesId) {
+    // Check if series exists
+    const seriesExists = await db.select().from(series)
+      .where(and(
+        eq(series.id, Number(seriesId)),
+        isNull(series.deletedAt)
+      ))
+      .limit(1)
+    
+    if (seriesExists.length === 0) {
+      return c.json({ error: 'Series not found' }, 404)
+    }
+    
+    conditions.push(eq(pilot.seriesId, Number(seriesId)))
+  }
+  
+  const allPilots = await db.select().from(pilot).where(and(...conditions))
+  return c.json(allPilots.map(formatDates), 200)
 })
 
 router.openapi(getPilotByIdRoute, async (c) => {

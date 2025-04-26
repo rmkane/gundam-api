@@ -2,8 +2,8 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { z } from 'zod'
 import { createRoute } from '@hono/zod-openapi'
 import { db } from '../db/index.js'
-import { mobileSuit } from '../db/schema.js'
-import { eq, isNull } from 'drizzle-orm'
+import { mobileSuit, series } from '../db/schema.js'
+import { eq, isNull, and } from 'drizzle-orm'
 
 const router = new OpenAPIHono()
 
@@ -42,6 +42,11 @@ const getMobileSuitsRoute = createRoute({
   path: '/',
   tags: ['Mobile Suits'],
   description: 'Get all mobile suits',
+  request: {
+    query: z.object({
+      seriesId: z.string().transform(Number).optional()
+    })
+  },
   responses: {
     200: {
       content: {
@@ -50,6 +55,16 @@ const getMobileSuitsRoute = createRoute({
         }
       },
       description: 'List of all mobile suits'
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Series not found'
     }
   }
 })
@@ -235,8 +250,27 @@ const formatDates = (item: any) => ({
 
 // Route handlers
 router.openapi(getMobileSuitsRoute, async (c) => {
-  const allMobileSuits = await db.select().from(mobileSuit).where(isNull(mobileSuit.deletedAt))
-  return c.json(allMobileSuits.map(formatDates))
+  const seriesId = c.req.query('seriesId')
+  const conditions = [isNull(mobileSuit.deletedAt)]
+  
+  if (seriesId) {
+    // Check if series exists
+    const seriesExists = await db.select().from(series)
+      .where(and(
+        eq(series.id, Number(seriesId)),
+        isNull(series.deletedAt)
+      ))
+      .limit(1)
+    
+    if (seriesExists.length === 0) {
+      return c.json({ error: 'Series not found' }, 404)
+    }
+    
+    conditions.push(eq(mobileSuit.seriesId, Number(seriesId)))
+  }
+  
+  const allMobileSuits = await db.select().from(mobileSuit).where(and(...conditions))
+  return c.json(allMobileSuits.map(formatDates), 200)
 })
 
 router.openapi(getMobileSuitByIdRoute, async (c) => {
