@@ -1,0 +1,26 @@
+{
+  "name": "gundam-api",
+  "version": "1.0.0",
+  "description": "Gundam API using Hono",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "db:generate": "drizzle-kit generate:pg",
+    "db:push": "drizzle-kit push:pg"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.8.2",
+    "drizzle-orm": "^0.29.3",
+    "hono": "^4.0.5",
+    "postgres": "^3.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.30",
+    "drizzle-kit": "^0.20.14",
+    "tsx": "^4.7.1",
+    "typescript": "^5.3.3"
+  },
+  "packageManager": "pnpm@8.15.4"
+}
