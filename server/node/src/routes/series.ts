@@ -2,8 +2,8 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { createRoute } from '@hono/zod-openapi'
 import { z } from 'zod'
 import { Context } from 'hono'
-import { SeriesSchema, CreateSeriesSchema, UpdateSeriesSchema } from '../schemas/index.js'
-import { NotFoundResponseSchema, BadRequestResponseSchema, GoneResponseSchema, InternalServerErrorResponseSchema, MessageResponseSchema } from '../schemas/responses.js'
+import { SeriesListResponseSchema, CreateSeriesSchema, SeriesResponseSchema, CreateSeriesResponseSchema, UpdateSeriesResponseSchema } from '../schemas/index.js'
+import { NotFoundResponseSchema, BadRequestResponseSchema, GoneResponseSchema, InternalServerErrorResponseSchema } from '../schemas/responses.js'
 import * as seriesService from '../services/series.js'
 
 const router = new OpenAPIHono()
@@ -18,7 +18,7 @@ const getSeriesRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: z.array(SeriesSchema)
+          schema: SeriesListResponseSchema
         }
       },
       description: 'List of all series'
@@ -40,7 +40,7 @@ const getSeriesByIdRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: SeriesSchema
+          schema: SeriesResponseSchema
         }
       },
       description: 'Series found'
@@ -82,7 +82,7 @@ const createSeriesRoute = createRoute({
     201: {
       content: {
         'application/json': {
-          schema: SeriesSchema
+          schema: CreateSeriesResponseSchema
         }
       },
       description: 'Series created successfully'
@@ -118,7 +118,7 @@ const updateSeriesRoute = createRoute({
     body: {
       content: {
         'application/json': {
-          schema: UpdateSeriesSchema
+          schema: UpdateSeriesResponseSchema
         }
       }
     }
@@ -127,7 +127,7 @@ const updateSeriesRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: SeriesSchema
+          schema: UpdateSeriesResponseSchema
         }
       },
       description: 'Series updated successfully'
@@ -170,12 +170,7 @@ const deleteSeriesRoute = createRoute({
     })
   },
   responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: MessageResponseSchema
-        }
-      },
+    204: {
       description: 'Series deleted successfully'
     },
     404: {
@@ -192,7 +187,8 @@ const deleteSeriesRoute = createRoute({
 // Controllers
 const getSeriesController = async (c: Context) => {
   const series = await seriesService.getSeries()
-  return c.json(series, 200)
+  // TODO: DO THIS WITH THE OTHER ROUTES
+  return c.json({data: series, meta: {page: 1, pageSize: 10, total: series.length}}, 200)
 }
 
 const getSeriesByIdController = async (c: Context) => {
@@ -203,7 +199,11 @@ const getSeriesByIdController = async (c: Context) => {
     return c.json({ error: result.error }, result.status as 404 | 410)
   }
   
-  return c.json(result.data, 200)
+  if (!result.data) {
+    return c.json({ error: 'Series not found' }, 404)
+  }
+  
+  return c.json({data: result.data, meta: {id: result.data.id, createdAt: result.data.createdAt, updatedAt: result.data.updatedAt}}, 200)
 }
 
 const createSeriesController = async (c: Context) => {
@@ -218,7 +218,7 @@ const createSeriesController = async (c: Context) => {
     return c.json({ error: 'Failed to create series' }, 500)
   }
   
-  return c.json(result.data, 201, {
+  return c.json({data: result.data, meta: {createdAt: result.data.createdAt}}, 201, {
     'Location': `/api/v1/series/${result.data.id}`
   })
 }
@@ -232,7 +232,14 @@ const updateSeriesController = async (c: Context) => {
     return c.json({ error: result.error }, result.status as 400 | 404 | 410)
   }
   
-  return c.json(result.data, 200)
+  if (!result.data) {
+    return c.json({ error: 'Series not found' }, 404)
+  }
+  
+  return c.json({
+    data: result.data,
+    meta: { updatedAt: result.data.updatedAt }
+  }, 200)
 }
 
 const deleteSeriesController = async (c: Context) => {
@@ -243,7 +250,11 @@ const deleteSeriesController = async (c: Context) => {
     return c.json({ error: result.error }, 404)
   }
   
-  return c.json({ message: 'Series deleted successfully' }, 200)
+  if (!result.data) {
+    return c.json({ error: 'Series not found' }, 404)
+  }
+  
+  return new Response(null, { status: 204 })
 }
 
 // Route handlers

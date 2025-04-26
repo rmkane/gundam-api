@@ -1,7 +1,12 @@
+import { eq, isNull, and } from 'drizzle-orm'
+import { z } from 'zod'
 import { db } from '../db/index.js'
 import { pilot, series } from '../db/schemas/index.js'
-import { eq, isNull, and } from 'drizzle-orm'
+import { CreatePilotSchema, UpdatePilotSchema } from '../schemas/index.js'
 import { formatDates } from '../utils/format-dates.js'
+
+type CreatePilotData = z.infer<typeof CreatePilotSchema>
+type UpdatePilotData = z.infer<typeof UpdatePilotSchema>
 
 export const getPilots = async (seriesId?: number) => {
   const conditions = [isNull(pilot.deletedAt)]
@@ -41,7 +46,7 @@ export const getPilotById = async (id: number) => {
   return { data: formatDates(pilotItem), status: 200 }
 }
 
-export const createPilot = async (data: { name: string, codename?: string, affiliation?: string, seriesId?: number }) => {
+export const createPilot = async (data: CreatePilotData) => {
   if (!data.name) {
     return { error: 'Name is required', status: 400 }
   }
@@ -69,8 +74,8 @@ export const createPilot = async (data: { name: string, codename?: string, affil
   }
 }
 
-export const updatePilot = async (id: number, data: { name: string, codename?: string, affiliation?: string, seriesId?: number }) => {
-  if (!data.name) {
+export const updatePilot = async (id: number, data: UpdatePilotData) => {
+  if (data.name === null || data.name === '') {
     return { error: 'Name is required', status: 400 }
   }
 

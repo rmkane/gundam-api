@@ -1,7 +1,12 @@
+import { eq, isNull, and } from 'drizzle-orm'
+import { z } from 'zod'
 import { db } from '../db/index.js'
 import { series } from '../db/schemas/index.js'
-import { eq, isNull, and } from 'drizzle-orm'
+import { CreateSeriesSchema, UpdateSeriesSchema } from '../schemas/index.js'
 import { formatDates } from '../utils/format-dates.js'
+
+type CreateSeriesData = z.infer<typeof CreateSeriesSchema>
+type UpdateSeriesData = z.infer<typeof UpdateSeriesSchema>
 
 export const getSeries = async () => {
   const allSeries = await db.select().from(series).where(isNull(series.deletedAt))
@@ -23,7 +28,7 @@ export const getSeriesById = async (id: number) => {
   return { data: formatDates(seriesItem), status: 200 }
 }
 
-export const createSeries = async (data: { name: string, yearStart?: number, yearEnd?: number, description?: string }) => {
+export const createSeries = async (data: CreateSeriesData) => {
   if (!data.name) {
     return { error: 'Name is required', status: 400 }
   }
@@ -37,8 +42,8 @@ export const createSeries = async (data: { name: string, yearStart?: number, yea
   }
 }
 
-export const updateSeries = async (id: number, data: { name: string, yearStart?: number, yearEnd?: number, description?: string }) => {
-  if (!data.name) {
+export const updateSeries = async (id: number, data: UpdateSeriesData) => {
+  if (data.name === null || data.name === '') {
     return { error: 'Name is required', status: 400 }
   }
 
@@ -74,5 +79,5 @@ export const deleteSeries = async (id: number) => {
     return { error: 'Series not found', status: 404 }
   }
 
-  return { data: { message: 'Series deleted successfully' }, status: 200 }
+  return { data: formatDates(result[0]), status: 200 }
 } 

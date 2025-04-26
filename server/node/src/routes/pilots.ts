@@ -2,8 +2,8 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { z } from 'zod'
 import { createRoute } from '@hono/zod-openapi'
 import { Context } from 'hono'
-import { PilotSchema, CreatePilotSchema, UpdatePilotSchema } from '../schemas/index.js'
-import { NotFoundResponseSchema, BadRequestResponseSchema, GoneResponseSchema, InternalServerErrorResponseSchema, MessageResponseSchema } from '../schemas/responses.js'
+import { CreatePilotSchema, UpdatePilotSchema, PilotListResponseSchema, PilotResponseSchema, CreatePilotResponseSchema, UpdatePilotResponseSchema } from '../schemas/index.js'
+import { NotFoundResponseSchema, BadRequestResponseSchema, GoneResponseSchema, InternalServerErrorResponseSchema } from '../schemas/responses.js'
 import * as pilotService from '../services/pilot.js'
 
 const router = new OpenAPIHono()
@@ -23,7 +23,7 @@ const getPilotsRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: z.array(PilotSchema)
+          schema: PilotListResponseSchema
         }
       },
       description: 'List of all pilots'
@@ -53,7 +53,7 @@ const getPilotByIdRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: PilotSchema
+          schema: PilotResponseSchema
         }
       },
       description: 'Pilot found'
@@ -95,7 +95,7 @@ const createPilotRoute = createRoute({
     201: {
       content: {
         'application/json': {
-          schema: PilotSchema
+          schema: CreatePilotResponseSchema
         }
       },
       description: 'Pilot created successfully'
@@ -140,7 +140,7 @@ const updatePilotRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: PilotSchema
+          schema: UpdatePilotResponseSchema
         }
       },
       description: 'Pilot updated successfully'
@@ -183,12 +183,7 @@ const deletePilotRoute = createRoute({
     })
   },
   responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: MessageResponseSchema
-        }
-      },
+    204: {
       description: 'Pilot deleted successfully'
     },
     404: {
@@ -210,8 +205,12 @@ const getPilotsController = async (c: Context) => {
   if (result.error) {
     return c.json({ error: result.error }, result.status as 404)
   }
+
+  if (!result.data) {
+    return c.json({ error: 'No pilots found' }, 404)
+  }
   
-  return c.json(result.data, 200)
+  return c.json({data: result.data, meta: {page: 1, pageSize: 10, total: result.data.length}}, 200)
 }
 
 const getPilotByIdController = async (c: Context) => {
@@ -221,8 +220,12 @@ const getPilotByIdController = async (c: Context) => {
   if (result.error) {
     return c.json({ error: result.error }, result.status as 404 | 410)
   }
+
+  if (!result.data) {
+    return c.json({ error: 'Pilot not found' }, 404)
+  }
   
-  return c.json(result.data, 200)
+  return c.json({data: result.data, meta: {id: result.data.id, createdAt: result.data.createdAt, updatedAt: result.data.updatedAt}}, 200)
 }
 
 const createPilotController = async (c: Context) => {
@@ -237,7 +240,7 @@ const createPilotController = async (c: Context) => {
     return c.json({ error: 'Failed to create pilot' }, 500)
   }
   
-  return c.json(result.data, 201, {
+  return c.json({data: result.data, meta: {createdAt: result.data.createdAt}}, 201, {
     'Location': `/api/v1/pilots/${result.data.id}`
   })
 }
@@ -250,8 +253,12 @@ const updatePilotController = async (c: Context) => {
   if (result.error) {
     return c.json({ error: result.error }, result.status as 400 | 404 | 410)
   }
+
+  if (!result.data) {
+    return c.json({ error: 'Pilot not found' }, 404)
+  }
   
-  return c.json(result.data, 200)
+  return c.json({data: result.data, meta: {updatedAt: result.data.updatedAt}}, 200)
 }
 
 const deletePilotController = async (c: Context) => {

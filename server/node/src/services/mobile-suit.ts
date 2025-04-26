@@ -1,7 +1,12 @@
+import { z } from 'zod'
+import { eq, isNull, and } from 'drizzle-orm'
 import { db } from '../db/index.js'
 import { mobileSuit, series } from '../db/schemas/index.js'
-import { eq, isNull, and } from 'drizzle-orm'
+import { CreateMobileSuitSchema, UpdateMobileSuitSchema } from '../schemas/index.js'
 import { formatDates } from '../utils/format-dates.js'
+
+type CreateMobileSuitData = z.infer<typeof CreateMobileSuitSchema>
+type UpdateMobileSuitData = z.infer<typeof UpdateMobileSuitSchema>
 
 export const getMobileSuits = async (seriesId?: number) => {
   const conditions = [isNull(mobileSuit.deletedAt)]
@@ -41,16 +46,7 @@ export const getMobileSuitById = async (id: number) => {
   return { data: formatDates(mobileSuitItem), status: 200 }
 }
 
-export const createMobileSuit = async (data: { 
-  name: string, 
-  modelNumber?: string, 
-  manufacturer?: string, 
-  height?: number, 
-  weight?: number, 
-  armorMaterial?: string, 
-  powerPlant?: string, 
-  seriesId?: number 
-}) => {
+export const createMobileSuit = async (data: CreateMobileSuitData) => {
   if (!data.name) {
     return { error: 'Name is required', status: 400 }
   }
@@ -78,16 +74,11 @@ export const createMobileSuit = async (data: {
   }
 }
 
-export const updateMobileSuit = async (id: number, data: { 
-  name?: string, 
-  modelNumber?: string, 
-  manufacturer?: string, 
-  height?: number, 
-  weight?: number, 
-  armorMaterial?: string, 
-  powerPlant?: string, 
-  seriesId?: number 
-}) => {
+export const updateMobileSuit = async (id: number, data: UpdateMobileSuitData) => {
+  if (data.name === null || data.name === '') {
+    return { error: 'Name is required', status: 400 }
+  }
+
   if (data.seriesId) {
     // Check if series exists
     const seriesExists = await db.select().from(series)

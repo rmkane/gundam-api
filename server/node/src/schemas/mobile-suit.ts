@@ -1,8 +1,8 @@
 import { z } from 'zod'
+import { EntitySchema } from './entity.js'
+import { ListMetaSchema, ReadMetaSchema, CreateMetaSchema, UpdateMetaSchema } from './metadata.js'
 
-export const MobileSuitSchema = z.object({
-  id: z.number(),
-  name: z.string(),
+export const MobileSuitSchema = EntitySchema.extend({
   modelNumber: z.string().nullable(),
   manufacturer: z.string().nullable(),
   height: z.number().nullable(),
@@ -10,10 +10,9 @@ export const MobileSuitSchema = z.object({
   armorMaterial: z.string().nullable(),
   powerPlant: z.string().nullable(),
   seriesId: z.number().nullable(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-  deletedAt: z.string().datetime().nullable()
 })
+
+export const MobileSuitListSchema = z.array(MobileSuitSchema)
 
 export const CreateMobileSuitSchema = z.object({
   name: z.string(),
@@ -26,4 +25,26 @@ export const CreateMobileSuitSchema = z.object({
   seriesId: z.number().optional()
 })
 
-export const UpdateMobileSuitSchema = CreateMobileSuitSchema 
+export const UpdateMobileSuitSchema = CreateMobileSuitSchema.extend({
+  name: z.string().optional()
+})
+
+export const MobileSuitListResponseSchema = z.object({
+  data: MobileSuitListSchema,
+  meta: ListMetaSchema
+})
+  
+export const MobileSuitResponseSchema = z.object({
+  data: MobileSuitSchema,
+  meta: ReadMetaSchema
+})
+
+export const CreateMobileSuitResponseSchema = z.object({
+  data: MobileSuitSchema,
+  meta: CreateMetaSchema
+})
+
+export const UpdateMobileSuitResponseSchema = z.object({
+  data: MobileSuitSchema,
+  meta: UpdateMetaSchema
+})

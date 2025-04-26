@@ -1,15 +1,14 @@
 import { z } from 'zod'
+import { EntitySchema } from './entity.js'
+import { ListMetaSchema, ReadMetaSchema, CreateMetaSchema, UpdateMetaSchema } from './metadata.js'
 
-export const PilotSchema = z.object({
-  id: z.number(),
-  name: z.string(),
+export const PilotSchema = EntitySchema.extend({
   codename: z.string().nullable(),
   affiliation: z.string().nullable(),
-  seriesId: z.number().nullable(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-  deletedAt: z.string().datetime().nullable()
+  seriesId: z.number().nullable()
 })
+
+export const PilotListSchema = z.array(PilotSchema)
 
 export const CreatePilotSchema = z.object({
   name: z.string(),
@@ -18,4 +17,26 @@ export const CreatePilotSchema = z.object({
   seriesId: z.number().optional()
 })
 
-export const UpdatePilotSchema = CreatePilotSchema 
+export const UpdatePilotSchema = CreatePilotSchema.extend({
+  name: z.string().optional()
+})
+
+export const PilotListResponseSchema = z.object({
+  data: PilotListSchema,
+  meta: ListMetaSchema
+})
+
+export const PilotResponseSchema = z.object({
+  data: PilotSchema,
+  meta: ReadMetaSchema
+})
+
+export const CreatePilotResponseSchema = z.object({
+  data: PilotSchema,
+  meta: CreateMetaSchema
+})
+
+export const UpdatePilotResponseSchema = z.object({
+  data: PilotSchema,
+  meta: UpdateMetaSchema
+})

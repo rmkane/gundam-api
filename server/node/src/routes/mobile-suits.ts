@@ -2,7 +2,7 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { z } from 'zod'
 import { createRoute } from '@hono/zod-openapi'
 import { Context } from 'hono'
-import { MobileSuitSchema, CreateMobileSuitSchema, UpdateMobileSuitSchema } from '../schemas/index.js'
+import { MobileSuitSchema, CreateMobileSuitSchema, UpdateMobileSuitSchema, MobileSuitListResponseSchema, MobileSuitResponseSchema, CreateMobileSuitResponseSchema, UpdateMobileSuitResponseSchema } from '../schemas/index.js'
 import { NotFoundResponseSchema, BadRequestResponseSchema, GoneResponseSchema, InternalServerErrorResponseSchema, MessageResponseSchema } from '../schemas/responses.js'
 import * as mobileSuitService from '../services/mobile-suit.js'
 
@@ -23,7 +23,7 @@ const getMobileSuitsRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: z.array(MobileSuitSchema)
+          schema: MobileSuitListResponseSchema
         }
       },
       description: 'List of all mobile suits'
@@ -53,7 +53,7 @@ const getMobileSuitByIdRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: MobileSuitSchema
+          schema: MobileSuitResponseSchema
         }
       },
       description: 'Mobile suit found'
@@ -98,10 +98,7 @@ const createMobileSuitRoute = createRoute({
     201: {
       content: {
         'application/json': {
-          schema: MobileSuitSchema.extend({
-            height: z.number().nullable(),
-            weight: z.number().nullable()
-          })
+          schema: CreateMobileSuitResponseSchema
         }
       },
       description: 'Mobile suit created successfully'
@@ -149,10 +146,7 @@ const updateMobileSuitRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: MobileSuitSchema.extend({
-            height: z.number().nullable(),
-            weight: z.number().nullable()
-          })
+          schema: UpdateMobileSuitResponseSchema
         }
       },
       description: 'Mobile suit updated successfully'
@@ -195,12 +189,7 @@ const deleteMobileSuitRoute = createRoute({
     })
   },
   responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: MessageResponseSchema
-        }
-      },
+    204: {
       description: 'Mobile suit deleted successfully'
     },
     404: {
@@ -222,8 +211,12 @@ const getMobileSuitsController = async (c: Context) => {
   if (result.error) {
     return c.json({ error: result.error }, result.status as 404)
   }
+
+  if (!result.data) {
+    return c.json({ error: 'No mobile suits found' }, 404)
+  }
   
-  return c.json(result.data, 200)
+  return c.json({data: result.data, meta: {page: 1, pageSize: 10, total: result.data.length}}, 200)
 }
 
 const getMobileSuitByIdController = async (c: Context) => {
@@ -233,8 +226,12 @@ const getMobileSuitByIdController = async (c: Context) => {
   if (result.error) {
     return c.json({ error: result.error }, result.status as 404 | 410)
   }
+
+  if (!result.data) {
+    return c.json({ error: 'Mobile suit not found' }, 404)
+  }
   
-  return c.json(result.data, 200)
+  return c.json({data: result.data, meta: {id: result.data.id, createdAt: result.data.createdAt, updatedAt: result.data.updatedAt}}, 200)
 }
 
 const createMobileSuitController = async (c: Context) => {
@@ -249,7 +246,7 @@ const createMobileSuitController = async (c: Context) => {
     return c.json({ error: 'Failed to create mobile suit' }, 500)
   }
   
-  return c.json(result.data, 201, {
+  return c.json({data: result.data, meta: {createdAt: result.data.createdAt}} , 201, {
     'Location': `/api/v1/mobile-suits/${result.data.id}`
   })
 }
@@ -263,7 +260,11 @@ const updateMobileSuitController = async (c: Context) => {
     return c.json({ error: result.error }, result.status as 400 | 404 | 410)
   }
   
-  return c.json(result.data, 200)
+  if (!result.data) {
+    return c.json({ error: 'Mobile suit not found' }, 404)
+  }
+  
+  return c.json({data: result.data, meta: {updatedAt: result.data.updatedAt}}, 200)
 }
 
 const deleteMobileSuitController = async (c: Context) => {
