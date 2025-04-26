@@ -30,7 +30,9 @@ const getPilotsRoute = createRoute({
   request: {
     query: z.object({
       seriesId: NumberParamSchema.optional(),
-      includeDeleted: BooleanParamSchema.describe('Include deleted pilots in the response'),
+      includeDeleted: BooleanParamSchema.optional().describe(
+        'Include deleted pilots in the response'
+      ),
     }),
   },
   responses: {

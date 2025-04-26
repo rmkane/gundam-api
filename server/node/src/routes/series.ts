@@ -28,7 +28,9 @@ const getSeriesRoute = createRoute({
   description: 'Get all series',
   request: {
     query: z.object({
-      includeDeleted: BooleanParamSchema.describe('Include deleted series in the response'),
+      includeDeleted: BooleanParamSchema.optional().describe(
+        'Include deleted series in the response'
+      ),
     }),
   },
   responses: {
