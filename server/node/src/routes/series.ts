@@ -14,7 +14,7 @@ import {
   GoneResponseSchema,
   InternalServerErrorResponseSchema,
   NotFoundResponseSchema,
-} from '../schemas/responses.js'
+} from '../schemas/response/error.js'
 import * as seriesService from '../services/series.js'
 
 const router = new OpenAPIHono()

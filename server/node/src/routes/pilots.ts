@@ -15,7 +15,7 @@ import {
   GoneResponseSchema,
   InternalServerErrorResponseSchema,
   NotFoundResponseSchema,
-} from '../schemas/responses.js'
+} from '../schemas/response/error.js'
 import * as pilotService from '../services/pilot.js'
 
 const router = new OpenAPIHono()

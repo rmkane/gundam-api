@@ -1,7 +1,12 @@
 import { z } from 'zod'
 
 import { EntitySchema } from './entity.js'
-import { CreateMetaSchema, ListMetaSchema, ReadMetaSchema, UpdateMetaSchema } from './metadata.js'
+import {
+  CreateMetaSchema,
+  ListMetaSchema,
+  ReadMetaSchema,
+  UpdateMetaSchema,
+} from './response/metadata.js'
 
 export const PilotSchema = EntitySchema.extend({
   codename: z.string().nullable(),

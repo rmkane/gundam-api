@@ -15,7 +15,7 @@ import {
   GoneResponseSchema,
   InternalServerErrorResponseSchema,
   NotFoundResponseSchema,
-} from '../schemas/responses.js'
+} from '../schemas/response/error.js'
 import * as mobileSuitService from '../services/mobile-suit.js'
 
 const router = new OpenAPIHono()

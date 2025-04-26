@@ -1,7 +1,12 @@
 import { z } from 'zod'
 
 import { EntitySchema } from './entity.js'
-import { CreateMetaSchema, ListMetaSchema, ReadMetaSchema, UpdateMetaSchema } from './metadata.js'
+import {
+  CreateMetaSchema,
+  ListMetaSchema,
+  ReadMetaSchema,
+  UpdateMetaSchema,
+} from './response/metadata.js'
 
 export const SeriesSchema = EntitySchema.extend({
   yearStart: z.number().nullable(),
