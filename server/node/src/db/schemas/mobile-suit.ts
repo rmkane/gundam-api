@@ -1,4 +1,5 @@
 import { pgTable, serial, varchar, integer, real, timestamp } from 'drizzle-orm/pg-core'
+
 import { series } from './series.js'
 
 export const mobileSuit = pgTable('mobile_suit', {
@@ -13,5 +14,5 @@ export const mobileSuit = pgTable('mobile_suit', {
   seriesId: integer('series_id').references(() => series.id),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-  deletedAt: timestamp('deleted_at')
-}) 
+  deletedAt: timestamp('deleted_at'),
+})

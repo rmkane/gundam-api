@@ -1,8 +1,9 @@
-import { OpenAPIHono } from '@hono/zod-openapi'
-import type { Context } from 'hono'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import { fileURLToPath } from 'url'
+
+import { OpenAPIHono } from '@hono/zod-openapi'
+import type { Context } from 'hono'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
@@ -23,8 +24,8 @@ rootRouter.get('/api', (c: Context) => {
       v1: {
         status: 'current',
         url: '/api/v1',
-        documentation: '/api/v1/docs'
-      }
+        documentation: '/api/v1/docs',
+      },
       // When v2 is added in the future:
       // v2: {
       //   status: 'beta',
@@ -33,7 +34,7 @@ rootRouter.get('/api', (c: Context) => {
       // }
     },
     latestVersion: 'v1',
-    defaultVersion: 'v1'
+    defaultVersion: 'v1',
   })
 })
 
@@ -41,6 +42,6 @@ rootRouter.get('/api', (c: Context) => {
 rootRouter.get('/health', (c: Context) => {
   return c.json({
     status: 'ok',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   })
 })

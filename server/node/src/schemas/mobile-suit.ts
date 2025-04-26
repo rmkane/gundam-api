@@ -1,4 +1,5 @@
 import { z } from 'zod'
+
 import { EntitySchema } from './entity.js'
 import { ListMetaSchema, ReadMetaSchema, CreateMetaSchema, UpdateMetaSchema } from './metadata.js'
 
@@ -22,29 +23,29 @@ export const CreateMobileSuitSchema = z.object({
   weight: z.number().optional(),
   armorMaterial: z.string().optional(),
   powerPlant: z.string().optional(),
-  seriesId: z.number().optional()
+  seriesId: z.number().optional(),
 })
 
 export const UpdateMobileSuitSchema = CreateMobileSuitSchema.extend({
-  name: z.string().optional()
+  name: z.string().optional(),
 })
 
 export const MobileSuitListResponseSchema = z.object({
   data: MobileSuitListSchema,
-  meta: ListMetaSchema
+  meta: ListMetaSchema,
 })
-  
+
 export const MobileSuitResponseSchema = z.object({
   data: MobileSuitSchema,
-  meta: ReadMetaSchema
+  meta: ReadMetaSchema,
 })
 
 export const CreateMobileSuitResponseSchema = z.object({
   data: MobileSuitSchema,
-  meta: CreateMetaSchema
+  meta: CreateMetaSchema,
 })
 
 export const UpdateMobileSuitResponseSchema = z.object({
   data: MobileSuitSchema,
-  meta: UpdateMetaSchema
+  meta: UpdateMetaSchema,
 })

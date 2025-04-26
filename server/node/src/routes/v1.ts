@@ -1,10 +1,12 @@
-import { OpenAPIHono } from '@hono/zod-openapi'
 import { swaggerUI } from '@hono/swagger-ui'
+import { OpenAPIHono } from '@hono/zod-openapi'
 import type { Context } from 'hono'
+
 import { openApiConfig } from '../config/openapi.js'
-import seriesRouter from './series.js'
-import pilotsRouter from './pilots.js'
+
 import mobileSuitsRouter from './mobile-suits.js'
+import pilotsRouter from './pilots.js'
+import seriesRouter from './series.js'
 
 export const v1Router = new OpenAPIHono()
 
@@ -17,8 +19,8 @@ v1Router.get('/', (c: Context) => {
     endpoints: {
       series: '/api/v1/series',
       pilots: '/api/v1/pilots',
-      mobileSuits: '/api/v1/mobile-suits'
-    }
+      mobileSuits: '/api/v1/mobile-suits',
+    },
   })
 })
 
@@ -31,4 +33,4 @@ v1Router.doc('/doc', openApiConfig)
 // Add routes to v1 router
 v1Router.route('/series', seriesRouter)
 v1Router.route('/pilots', pilotsRouter)
-v1Router.route('/mobile-suits', mobileSuitsRouter) 
+v1Router.route('/mobile-suits', mobileSuitsRouter)

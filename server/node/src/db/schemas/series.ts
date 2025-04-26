@@ -8,5 +8,5 @@ export const series = pgTable('series', {
   description: text('description'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-  deletedAt: timestamp('deleted_at')
-}) 
+  deletedAt: timestamp('deleted_at'),
+})

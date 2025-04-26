@@ -1,5 +1,6 @@
 import { serve } from '@hono/node-server'
 import { OpenAPIHono } from '@hono/zod-openapi'
+
 import { rootRouter } from './routes/root.js'
 import { v1Router } from './routes/v1.js'
 
@@ -18,5 +19,5 @@ console.log(`Server is running on port ${port}`)
 
 serve({
   fetch: app.fetch,
-  port: Number(port)
+  port: Number(port),
 })

@@ -1,5 +1,6 @@
 import { eq, isNull } from 'drizzle-orm'
 import { z } from 'zod'
+
 import { db } from '../db/index.js'
 import { series } from '../db/schemas/index.js'
 import { CreateSeriesSchema, UpdateSeriesSchema } from '../schemas/index.js'
@@ -38,7 +39,7 @@ export const createSeries = async (data: CreateSeriesData) => {
   return {
     data: formatDates(newSeries),
     status: 201,
-    headers: { 'Location': `/api/v1/series/${newSeries.id}` }
+    headers: { Location: `/api/v1/series/${newSeries.id}` },
   }
 }
 
@@ -47,10 +48,11 @@ export const updateSeries = async (id: number, data: UpdateSeriesData) => {
     return { error: 'Name is required', status: 400 }
   }
 
-  const result = await db.update(series)
+  const result = await db
+    .update(series)
     .set({
       ...data,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     })
     .where(eq(series.id, id))
     .returning()
@@ -68,9 +70,10 @@ export const updateSeries = async (id: number, data: UpdateSeriesData) => {
 }
 
 export const deleteSeries = async (id: number) => {
-  const result = await db.update(series)
+  const result = await db
+    .update(series)
     .set({
-      deletedAt: new Date()
+      deletedAt: new Date(),
     })
     .where(eq(series.id, id))
     .returning()

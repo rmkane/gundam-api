@@ -1,4 +1,5 @@
 import { pgTable, serial, varchar, integer, timestamp } from 'drizzle-orm/pg-core'
+
 import { series } from './series.js'
 
 export const pilot = pgTable('pilot', {
@@ -9,5 +10,5 @@ export const pilot = pgTable('pilot', {
   seriesId: integer('series_id').references(() => series.id),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-  deletedAt: timestamp('deleted_at')
-}) 
+  deletedAt: timestamp('deleted_at'),
+})

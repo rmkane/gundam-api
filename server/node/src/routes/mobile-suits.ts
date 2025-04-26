@@ -1,9 +1,22 @@
 import { OpenAPIHono } from '@hono/zod-openapi'
-import { z } from 'zod'
 import { createRoute } from '@hono/zod-openapi'
 import { Context } from 'hono'
-import { CreateMobileSuitSchema, UpdateMobileSuitSchema, MobileSuitListResponseSchema, MobileSuitResponseSchema, CreateMobileSuitResponseSchema, UpdateMobileSuitResponseSchema } from '../schemas/index.js'
-import { NotFoundResponseSchema, BadRequestResponseSchema, GoneResponseSchema, InternalServerErrorResponseSchema } from '../schemas/responses.js'
+import { z } from 'zod'
+
+import {
+  CreateMobileSuitSchema,
+  UpdateMobileSuitSchema,
+  MobileSuitListResponseSchema,
+  MobileSuitResponseSchema,
+  CreateMobileSuitResponseSchema,
+  UpdateMobileSuitResponseSchema,
+} from '../schemas/index.js'
+import {
+  NotFoundResponseSchema,
+  BadRequestResponseSchema,
+  GoneResponseSchema,
+  InternalServerErrorResponseSchema,
+} from '../schemas/responses.js'
 import * as mobileSuitService from '../services/mobile-suit.js'
 
 const router = new OpenAPIHono()
@@ -16,27 +29,27 @@ const getMobileSuitsRoute = createRoute({
   description: 'Get all mobile suits',
   request: {
     query: z.object({
-      seriesId: z.string().transform(Number).optional()
-    })
+      seriesId: z.string().transform(Number).optional(),
+    }),
   },
   responses: {
     200: {
       content: {
         'application/json': {
-          schema: MobileSuitListResponseSchema
-        }
+          schema: MobileSuitListResponseSchema,
+        },
       },
-      description: 'List of all mobile suits'
+      description: 'List of all mobile suits',
     },
     404: {
       content: {
         'application/json': {
-          schema: NotFoundResponseSchema
-        }
+          schema: NotFoundResponseSchema,
+        },
       },
-      description: 'Series not found'
-    }
-  }
+      description: 'Series not found',
+    },
+  },
 })
 
 const getMobileSuitByIdRoute = createRoute({
@@ -46,35 +59,35 @@ const getMobileSuitByIdRoute = createRoute({
   description: 'Get a mobile suit by ID',
   request: {
     params: z.object({
-      id: z.string().transform(Number)
-    })
+      id: z.string().transform(Number),
+    }),
   },
   responses: {
     200: {
       content: {
         'application/json': {
-          schema: MobileSuitResponseSchema
-        }
+          schema: MobileSuitResponseSchema,
+        },
       },
-      description: 'Mobile suit found'
+      description: 'Mobile suit found',
     },
     404: {
       content: {
         'application/json': {
-          schema: NotFoundResponseSchema
-        }
+          schema: NotFoundResponseSchema,
+        },
       },
-      description: 'Mobile suit not found'
+      description: 'Mobile suit not found',
     },
     410: {
       content: {
         'application/json': {
-          schema: GoneResponseSchema
-        }
+          schema: GoneResponseSchema,
+        },
       },
-      description: 'Mobile suit has been deleted'
-    }
-  }
+      description: 'Mobile suit has been deleted',
+    },
+  },
 })
 
 const createMobileSuitRoute = createRoute({
@@ -88,38 +101,38 @@ const createMobileSuitRoute = createRoute({
         'application/json': {
           schema: CreateMobileSuitSchema.extend({
             height: z.number().nullable(),
-            weight: z.number().nullable()
-          })
-        }
-      }
-    }
+            weight: z.number().nullable(),
+          }),
+        },
+      },
+    },
   },
   responses: {
     201: {
       content: {
         'application/json': {
-          schema: CreateMobileSuitResponseSchema
-        }
+          schema: CreateMobileSuitResponseSchema,
+        },
       },
-      description: 'Mobile suit created successfully'
+      description: 'Mobile suit created successfully',
     },
     400: {
       content: {
         'application/json': {
-          schema: BadRequestResponseSchema
-        }
+          schema: BadRequestResponseSchema,
+        },
       },
-      description: 'Invalid request body'
+      description: 'Invalid request body',
     },
     500: {
       content: {
         'application/json': {
-          schema: InternalServerErrorResponseSchema
-        }
+          schema: InternalServerErrorResponseSchema,
+        },
       },
-      description: 'Internal server error'
-    }
-  }
+      description: 'Internal server error',
+    },
+  },
 })
 
 const updateMobileSuitRoute = createRoute({
@@ -129,53 +142,53 @@ const updateMobileSuitRoute = createRoute({
   description: 'Update a mobile suit',
   request: {
     params: z.object({
-      id: z.string().transform(Number)
+      id: z.string().transform(Number),
     }),
     body: {
       content: {
         'application/json': {
           schema: UpdateMobileSuitSchema.extend({
             height: z.number().nullable(),
-            weight: z.number().nullable()
-          })
-        }
-      }
-    }
+            weight: z.number().nullable(),
+          }),
+        },
+      },
+    },
   },
   responses: {
     200: {
       content: {
         'application/json': {
-          schema: UpdateMobileSuitResponseSchema
-        }
+          schema: UpdateMobileSuitResponseSchema,
+        },
       },
-      description: 'Mobile suit updated successfully'
+      description: 'Mobile suit updated successfully',
     },
     400: {
       content: {
         'application/json': {
-          schema: BadRequestResponseSchema
-        }
+          schema: BadRequestResponseSchema,
+        },
       },
-      description: 'Invalid request body'
+      description: 'Invalid request body',
     },
     404: {
       content: {
         'application/json': {
-          schema: NotFoundResponseSchema
-        }
+          schema: NotFoundResponseSchema,
+        },
       },
-      description: 'Mobile suit not found'
+      description: 'Mobile suit not found',
     },
     410: {
       content: {
         'application/json': {
-          schema: GoneResponseSchema
-        }
+          schema: GoneResponseSchema,
+        },
       },
-      description: 'Mobile suit has been deleted'
-    }
-  }
+      description: 'Mobile suit has been deleted',
+    },
+  },
 })
 
 const deleteMobileSuitRoute = createRoute({
@@ -185,22 +198,22 @@ const deleteMobileSuitRoute = createRoute({
   description: 'Delete a mobile suit (soft delete)',
   request: {
     params: z.object({
-      id: z.string().transform(Number)
-    })
+      id: z.string().transform(Number),
+    }),
   },
   responses: {
     204: {
-      description: 'Mobile suit deleted successfully'
+      description: 'Mobile suit deleted successfully',
     },
     404: {
       content: {
         'application/json': {
-          schema: NotFoundResponseSchema
-        }
+          schema: NotFoundResponseSchema,
+        },
       },
-      description: 'Mobile suit not found'
-    }
-  }
+      description: 'Mobile suit not found',
+    },
+  },
 })
 
 // Controllers
@@ -216,7 +229,10 @@ const getMobileSuitsController = async (c: Context) => {
     return c.json({ error: 'No mobile suits found' }, 404)
   }
 
-  return c.json({data: result.data, meta: {page: 1, pageSize: 10, total: result.data.length}}, 200)
+  return c.json(
+    { data: result.data, meta: { page: 1, pageSize: 10, total: result.data.length } },
+    200
+  )
 }
 
 const getMobileSuitByIdController = async (c: Context) => {
@@ -231,7 +247,17 @@ const getMobileSuitByIdController = async (c: Context) => {
     return c.json({ error: 'Mobile suit not found' }, 404)
   }
 
-  return c.json({data: result.data, meta: {id: result.data.id, createdAt: result.data.createdAt, updatedAt: result.data.updatedAt}}, 200)
+  return c.json(
+    {
+      data: result.data,
+      meta: {
+        id: result.data.id,
+        createdAt: result.data.createdAt,
+        updatedAt: result.data.updatedAt,
+      },
+    },
+    200
+  )
 }
 
 const createMobileSuitController = async (c: Context) => {
@@ -246,8 +272,8 @@ const createMobileSuitController = async (c: Context) => {
     return c.json({ error: 'Failed to create mobile suit' }, 500)
   }
 
-  return c.json({data: result.data, meta: {createdAt: result.data.createdAt}} , 201, {
-    'Location': `/api/v1/mobile-suits/${result.data.id}`
+  return c.json({ data: result.data, meta: { createdAt: result.data.createdAt } }, 201, {
+    Location: `/api/v1/mobile-suits/${result.data.id}`,
   })
 }
 
@@ -264,7 +290,7 @@ const updateMobileSuitController = async (c: Context) => {
     return c.json({ error: 'Mobile suit not found' }, 404)
   }
 
-  return c.json({data: result.data, meta: {updatedAt: result.data.updatedAt}}, 200)
+  return c.json({ data: result.data, meta: { updatedAt: result.data.updatedAt } }, 200)
 }
 
 const deleteMobileSuitController = async (c: Context) => {
