@@ -1,11 +1,7 @@
 #!/bin/bash
 
 # Default environment values
-DB_HOST="localhost"
-DB_PORT="5432"
-DB_USER="postgres"
-DB_PASSWORD="postgres"
-DB_NAME="gundam_db"
+VITE_API_URL="http://localhost:3000/api/v1"
 
 # Check if .env file already exists
 if [ -f .env ]; then
@@ -19,13 +15,8 @@ fi
 
 # Create .env file with default values
 cat > .env << EOL
-DB_HOST=$DB_HOST
-DB_PORT=$DB_PORT
-DB_USER=$DB_USER
-DB_PASSWORD=$DB_PASSWORD
-DB_NAME=$DB_NAME
+VITE_API_URL=$VITE_API_URL
 EOL
 
 echo ".env file has been created with default values."
 echo "Please review and modify the values as needed." 
- 

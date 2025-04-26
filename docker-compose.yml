@@ -52,7 +52,7 @@ services:
       - ./client/vue:/app
       - /app/node_modules
     environment:
-      - VITE_API_URL=http://api:3000
+      - VITE_API_URL=http://localhost:3000/api/v1
     depends_on:
       - api
 

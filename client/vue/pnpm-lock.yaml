@@ -5,9 +5,18 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  ag-grid-community:
+    specifier: ^33.2.4
+    version: 33.2.4
+  ag-grid-vue3:
+    specifier: ^33.2.4
+    version: 33.2.4(vue@3.5.13)
   vue:
     specifier: ^3.5.13
     version: 3.5.13(typescript@5.7.3)
+  vue-router:
+    specifier: ^4.5.1
+    version: 4.5.1(vue@3.5.13)
 
 devDependencies:
   '@vitejs/plugin-vue':
@@ -512,6 +521,10 @@ packages:
       he: 1.2.0
     dev: true
 
+  /@vue/devtools-api@6.6.4:
+    resolution: {integrity: sha512-sGhTPMuXqZ1rVOk32RylztWkfXTRhuS7vgAKv0zjqk8gbsHkJ7xfFf+jbySxt7tWObEJwyKaHMikV/WGDiQm8g==}
+    dev: false
+
   /@vue/language-core@2.2.10(typescript@5.7.3):
     resolution: {integrity: sha512-+yNoYx6XIKuAO8Mqh1vGytu8jkFEOH5C8iOv3i8Z/65A7x9iAOXA97Q+PqZ3nlm2lxf5rOJuIGI/wDtx/riNYw==}
     peerDependencies:
@@ -576,6 +589,25 @@ packages:
       typescript: 5.7.3
       vue: 3.5.13(typescript@5.7.3)
     dev: true
+
+  /ag-charts-types@11.2.4:
+    resolution: {integrity: sha512-a1aQjtQ9ZH+J8BF3YcWAIHUt9ZLiL9IVZ8R5h7z2CkTNu2TPq5UlsCcF0/YZKc1M8CM0CdSNLSGQuWUwDNxAcA==}
+    dev: false
+
+  /ag-grid-community@33.2.4:
+    resolution: {integrity: sha512-7XT1+wxmMlMVXB27BJOzlft9ATB0C5HOJcCGMc8dCO2W17JXbNknVEEDGTBKoSvA4Cei8sARrRDxmPgY8mWopQ==}
+    dependencies:
+      ag-charts-types: 11.2.4
+    dev: false
+
+  /ag-grid-vue3@33.2.4(vue@3.5.13):
+    resolution: {integrity: sha512-U5m4A9sc+jpoENwwl/AZ7r0053tbRvI39nRh55pYMJt6rrnotgUyJVHZfqJ6cExcSM3tqeW+vg1tMXGqoR4PNA==}
+    peerDependencies:
+      vue: ^3.5.0
+    dependencies:
+      ag-grid-community: 33.2.4
+      vue: 3.5.13(typescript@5.7.3)
+    dev: false
 
   /alien-signals@1.0.13:
     resolution: {integrity: sha512-OGj9yyTnJEttvzhTUWuscOvtqxq5vrhF7vL9oS0xJ2mK0ItPYP1/y+vCFebfxoEyAz0++1AIwJ5CMr+Fk3nDmg==}
@@ -803,6 +835,15 @@ packages:
   /vscode-uri@3.1.0:
     resolution: {integrity: sha512-/BpdSx+yCQGnCvecbyXdxHDkuk55/G3xwnC0GqY4gmQ3j+A+g8kzzgB4Nk/SINjqn6+waqw3EgbVF2QKExkRxQ==}
     dev: true
+
+  /vue-router@4.5.1(vue@3.5.13):
+    resolution: {integrity: sha512-ogAF3P97NPm8fJsE4by9dwSYtDwXIY1nFY9T6DyQnGHd1E2Da94w9JIolpe42LJGIl0DwOHBi8TcRPlPGwbTtw==}
+    peerDependencies:
+      vue: ^3.2.0
+    dependencies:
+      '@vue/devtools-api': 6.6.4
+      vue: 3.5.13(typescript@5.7.3)
+    dev: false
 
   /vue-tsc@2.2.10(typescript@5.7.3):
     resolution: {integrity: sha512-jWZ1xSaNbabEV3whpIDMbjVSVawjAyW+x1n3JeGQo7S0uv2n9F/JMgWW90tGWNFRKya4YwKMZgCtr0vRAM7DeQ==}
