@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, integer, real, timestamp } from 'drizzle-orm/pg-core'
+import { integer, pgTable, real, serial, timestamp, varchar } from 'drizzle-orm/pg-core'
 
 import { series } from './series.js'
 

@@ -4,18 +4,18 @@ import { Context } from 'hono'
 import { z } from 'zod'
 
 import {
+  CreatePilotResponseSchema,
   CreatePilotSchema,
-  UpdatePilotSchema,
   PilotListResponseSchema,
   PilotResponseSchema,
-  CreatePilotResponseSchema,
   UpdatePilotResponseSchema,
+  UpdatePilotSchema,
 } from '../schemas/index.js'
 import {
-  NotFoundResponseSchema,
   BadRequestResponseSchema,
   GoneResponseSchema,
   InternalServerErrorResponseSchema,
+  NotFoundResponseSchema,
 } from '../schemas/responses.js'
 import * as pilotService from '../services/pilot.js'
 

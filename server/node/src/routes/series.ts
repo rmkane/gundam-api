@@ -4,17 +4,17 @@ import { Context } from 'hono'
 import { z } from 'zod'
 
 import {
-  SeriesListResponseSchema,
-  CreateSeriesSchema,
-  SeriesResponseSchema,
   CreateSeriesResponseSchema,
+  CreateSeriesSchema,
+  SeriesListResponseSchema,
+  SeriesResponseSchema,
   UpdateSeriesResponseSchema,
 } from '../schemas/index.js'
 import {
-  NotFoundResponseSchema,
   BadRequestResponseSchema,
   GoneResponseSchema,
   InternalServerErrorResponseSchema,
+  NotFoundResponseSchema,
 } from '../schemas/responses.js'
 import * as seriesService from '../services/series.js'
 

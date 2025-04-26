@@ -33,7 +33,17 @@ export default [
       'import/order': ['error', {
         'groups': ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
         'newlines-between': 'always',
-        'alphabetize': { 'order': 'asc', 'caseInsensitive': true }
+        'alphabetize': {
+          'order': 'asc',
+          'caseInsensitive': true,
+          'orderImportKind': 'asc'
+        }
+      }],
+      'sort-imports': ['error', {
+        'ignoreCase': true,
+        'ignoreDeclarationSort': true,
+        'ignoreMemberSort': false,
+        'memberSyntaxSortOrder': ['none', 'all', 'multiple', 'single']
       }]
     },
   },

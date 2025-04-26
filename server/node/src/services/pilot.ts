@@ -1,4 +1,4 @@
-import { eq, isNull, and } from 'drizzle-orm'
+import { and, eq, isNull } from 'drizzle-orm'
 import { z } from 'zod'
 
 import { db } from '../db/index.js'

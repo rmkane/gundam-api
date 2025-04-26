@@ -1,4 +1,4 @@
-import { pgTable, integer, primaryKey } from 'drizzle-orm/pg-core'
+import { integer, pgTable, primaryKey } from 'drizzle-orm/pg-core'
 
 import { mobileSuit } from './mobile-suit.js'
 import { pilot } from './pilot.js'
