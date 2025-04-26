@@ -28,8 +28,8 @@ CREATE TABLE mobile_suit (
     name VARCHAR(100) NOT NULL,
     model_number VARCHAR(50),
     manufacturer VARCHAR(100),
-    height DECIMAL(5,2), -- in meters
-    weight DECIMAL(6,2), -- in metric tons
+    height REAL, -- in meters
+    weight REAL, -- in metric tons
     armor_material VARCHAR(50),
     power_plant VARCHAR(100),
     series_id INTEGER REFERENCES series(id),

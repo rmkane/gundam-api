@@ -1,10 +1,10 @@
 import { OpenAPIHono } from '@hono/zod-openapi'
-import { z } from 'zod'
 import { createRoute } from '@hono/zod-openapi'
-import { db } from '../db/index.js'
-import { series } from '../db/schemas/index.js'
-import { eq, isNull, and } from 'drizzle-orm'
+import { z } from 'zod'
+import { Context } from 'hono'
 import { SeriesSchema, CreateSeriesSchema, UpdateSeriesSchema } from '../schemas/index.js'
+import { NotFoundResponseSchema, BadRequestResponseSchema, GoneResponseSchema, InternalServerErrorResponseSchema, MessageResponseSchema } from '../schemas/responses.js'
+import * as seriesService from '../services/series.js'
 
 const router = new OpenAPIHono()
 
@@ -48,9 +48,7 @@ const getSeriesByIdRoute = createRoute({
     404: {
       content: {
         'application/json': {
-          schema: z.object({
-            error: z.string()
-          })
+          schema: NotFoundResponseSchema
         }
       },
       description: 'Series not found'
@@ -58,9 +56,7 @@ const getSeriesByIdRoute = createRoute({
     410: {
       content: {
         'application/json': {
-          schema: z.object({
-            error: z.string()
-          })
+          schema: GoneResponseSchema
         }
       },
       description: 'Series has been deleted'
@@ -94,12 +90,18 @@ const createSeriesRoute = createRoute({
     400: {
       content: {
         'application/json': {
-          schema: z.object({
-            error: z.string()
-          })
+          schema: BadRequestResponseSchema
         }
       },
       description: 'Invalid request body'
+    },
+    500: {
+      content: {
+        'application/json': {
+          schema: InternalServerErrorResponseSchema
+        }
+      },
+      description: 'Internal server error'
     }
   }
 })
@@ -133,9 +135,7 @@ const updateSeriesRoute = createRoute({
     400: {
       content: {
         'application/json': {
-          schema: z.object({
-            error: z.string()
-          })
+          schema: BadRequestResponseSchema
         }
       },
       description: 'Invalid request body'
@@ -143,9 +143,7 @@ const updateSeriesRoute = createRoute({
     404: {
       content: {
         'application/json': {
-          schema: z.object({
-            error: z.string()
-          })
+          schema: NotFoundResponseSchema
         }
       },
       description: 'Series not found'
@@ -153,9 +151,7 @@ const updateSeriesRoute = createRoute({
     410: {
       content: {
         'application/json': {
-          schema: z.object({
-            error: z.string()
-          })
+          schema: GoneResponseSchema
         }
       },
       description: 'Series has been deleted'
@@ -177,9 +173,7 @@ const deleteSeriesRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: z.object({
-            message: z.string()
-          })
+          schema: MessageResponseSchema
         }
       },
       description: 'Series deleted successfully'
@@ -187,9 +181,7 @@ const deleteSeriesRoute = createRoute({
     404: {
       content: {
         'application/json': {
-          schema: z.object({
-            error: z.string()
-          })
+          schema: NotFoundResponseSchema
         }
       },
       description: 'Series not found'
@@ -197,103 +189,68 @@ const deleteSeriesRoute = createRoute({
   }
 })
 
-// Helper function to format dates
-const formatDates = (item: any) => ({
-  ...item,
-  createdAt: item.createdAt?.toISOString() ?? null,
-  updatedAt: item.updatedAt?.toISOString() ?? null,
-  deletedAt: item.deletedAt?.toISOString() ?? null
-})
+// Controllers
+const getSeriesController = async (c: Context) => {
+  const series = await seriesService.getSeries()
+  return c.json(series, 200)
+}
+
+const getSeriesByIdController = async (c: Context) => {
+  const id = Number(c.req.param('id'))
+  const result = await seriesService.getSeriesById(id)
+  
+  if (result.error) {
+    return c.json({ error: result.error }, result.status as 404 | 410)
+  }
+  
+  return c.json(result.data, 200)
+}
+
+const createSeriesController = async (c: Context) => {
+  const body = await c.req.json()
+  const result = await seriesService.createSeries(body)
+  
+  if (result.error) {
+    return c.json({ error: result.error }, 400)
+  }
+  
+  if (!result.data) {
+    return c.json({ error: 'Failed to create series' }, 500)
+  }
+  
+  return c.json(result.data, 201, {
+    'Location': `/api/v1/series/${result.data.id}`
+  })
+}
+
+const updateSeriesController = async (c: Context) => {
+  const id = Number(c.req.param('id'))
+  const body = await c.req.json()
+  const result = await seriesService.updateSeries(id, body)
+  
+  if (result.error) {
+    return c.json({ error: result.error }, result.status as 400 | 404 | 410)
+  }
+  
+  return c.json(result.data, 200)
+}
+
+const deleteSeriesController = async (c: Context) => {
+  const id = Number(c.req.param('id'))
+  const result = await seriesService.deleteSeries(id)
+  
+  if (result.error) {
+    return c.json({ error: result.error }, 404)
+  }
+  
+  return c.json({ message: 'Series deleted successfully' }, 200)
+}
 
 // Route handlers
-router.openapi(getSeriesRoute, async (c) => {
-  const allSeries = await db.select().from(series).where(isNull(series.deletedAt))
-  return c.json(allSeries.map(formatDates))
-})
-
-router.openapi(getSeriesByIdRoute, async (c) => {
-  const id = Number(c.req.param('id'))
-  const result = await db.select().from(series).where(eq(series.id, id))
-  
-  if (result.length === 0) {
-    return c.json({ error: 'Series not found' }, 404)
-  }
-
-  const seriesItem = result[0]
-  if (seriesItem.deletedAt) {
-    return c.json({ error: 'Series has been deleted' }, 410)
-  }
-  
-  return c.json(formatDates(seriesItem))
-})
-
-router.openapi(createSeriesRoute, async (c) => {
-  const body = await c.req.json()
-  const { name, yearStart, yearEnd, description } = body
-
-  if (!name) {
-    return c.json({ error: 'Name is required' }, 400)
-  }
-
-  const result = await db.insert(series).values({
-    name,
-    yearStart,
-    yearEnd,
-    description
-  }).returning()
-
-  const newSeries = result[0]
-  return c.json(formatDates(newSeries), 201, {
-    'Location': `/api/v1/series/${newSeries.id}`
-  })
-})
-
-router.openapi(updateSeriesRoute, async (c) => {
-  const id = Number(c.req.param('id'))
-  const body = await c.req.json()
-  const { name, yearStart, yearEnd, description } = body
-
-  if (!name) {
-    return c.json({ error: 'Name is required' }, 400)
-  }
-
-  const result = await db.update(series)
-    .set({
-      name,
-      yearStart,
-      yearEnd,
-      description,
-      updatedAt: new Date()
-    })
-    .where(eq(series.id, id))
-    .returning()
-
-  if (result.length === 0) {
-    return c.json({ error: 'Series not found' }, 404)
-  }
-
-  const updatedSeries = result[0]
-  if (updatedSeries.deletedAt) {
-    return c.json({ error: 'Series has been deleted' }, 410)
-  }
-
-  return c.json(formatDates(updatedSeries))
-})
-
-router.openapi(deleteSeriesRoute, async (c) => {
-  const id = Number(c.req.param('id'))
-  const result = await db.update(series)
-    .set({
-      deletedAt: new Date()
-    })
-    .where(eq(series.id, id))
-    .returning()
-
-  if (result.length === 0) {
-    return c.json({ error: 'Series not found' }, 404)
-  }
-
-  return c.json({ message: 'Series deleted successfully' }, 200)
-})
+router.openapi(getSeriesRoute, getSeriesController)
+router.openapi(getSeriesByIdRoute, getSeriesByIdController)
+router.openapi(createSeriesRoute, createSeriesController)
+router.openapi(updateSeriesRoute, updateSeriesController)
+router.openapi(deleteSeriesRoute, deleteSeriesController)
 
 export default router 

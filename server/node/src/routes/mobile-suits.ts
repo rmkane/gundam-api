@@ -1,10 +1,10 @@
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { z } from 'zod'
 import { createRoute } from '@hono/zod-openapi'
-import { db } from '../db/index.js'
-import { mobileSuit, series } from '../db/schemas/index.js'
-import { eq, isNull, and } from 'drizzle-orm'
+import { Context } from 'hono'
 import { MobileSuitSchema, CreateMobileSuitSchema, UpdateMobileSuitSchema } from '../schemas/index.js'
+import { NotFoundResponseSchema, BadRequestResponseSchema, GoneResponseSchema, InternalServerErrorResponseSchema, MessageResponseSchema } from '../schemas/responses.js'
+import * as mobileSuitService from '../services/mobile-suit.js'
 
 const router = new OpenAPIHono()
 
@@ -31,9 +31,7 @@ const getMobileSuitsRoute = createRoute({
     404: {
       content: {
         'application/json': {
-          schema: z.object({
-            error: z.string()
-          })
+          schema: NotFoundResponseSchema
         }
       },
       description: 'Series not found'
@@ -63,9 +61,7 @@ const getMobileSuitByIdRoute = createRoute({
     404: {
       content: {
         'application/json': {
-          schema: z.object({
-            error: z.string()
-          })
+          schema: NotFoundResponseSchema
         }
       },
       description: 'Mobile suit not found'
@@ -73,9 +69,7 @@ const getMobileSuitByIdRoute = createRoute({
     410: {
       content: {
         'application/json': {
-          schema: z.object({
-            error: z.string()
-          })
+          schema: GoneResponseSchema
         }
       },
       description: 'Mobile suit has been deleted'
@@ -92,7 +86,10 @@ const createMobileSuitRoute = createRoute({
     body: {
       content: {
         'application/json': {
-          schema: CreateMobileSuitSchema
+          schema: CreateMobileSuitSchema.extend({
+            height: z.number().nullable(),
+            weight: z.number().nullable()
+          })
         }
       }
     }
@@ -101,7 +98,10 @@ const createMobileSuitRoute = createRoute({
     201: {
       content: {
         'application/json': {
-          schema: MobileSuitSchema
+          schema: MobileSuitSchema.extend({
+            height: z.number().nullable(),
+            weight: z.number().nullable()
+          })
         }
       },
       description: 'Mobile suit created successfully'
@@ -109,12 +109,18 @@ const createMobileSuitRoute = createRoute({
     400: {
       content: {
         'application/json': {
-          schema: z.object({
-            error: z.string()
-          })
+          schema: BadRequestResponseSchema
         }
       },
       description: 'Invalid request body'
+    },
+    500: {
+      content: {
+        'application/json': {
+          schema: InternalServerErrorResponseSchema
+        }
+      },
+      description: 'Internal server error'
     }
   }
 })
@@ -131,7 +137,10 @@ const updateMobileSuitRoute = createRoute({
     body: {
       content: {
         'application/json': {
-          schema: UpdateMobileSuitSchema
+          schema: UpdateMobileSuitSchema.extend({
+            height: z.number().nullable(),
+            weight: z.number().nullable()
+          })
         }
       }
     }
@@ -140,7 +149,10 @@ const updateMobileSuitRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: MobileSuitSchema
+          schema: MobileSuitSchema.extend({
+            height: z.number().nullable(),
+            weight: z.number().nullable()
+          })
         }
       },
       description: 'Mobile suit updated successfully'
@@ -148,9 +160,7 @@ const updateMobileSuitRoute = createRoute({
     400: {
       content: {
         'application/json': {
-          schema: z.object({
-            error: z.string()
-          })
+          schema: BadRequestResponseSchema
         }
       },
       description: 'Invalid request body'
@@ -158,9 +168,7 @@ const updateMobileSuitRoute = createRoute({
     404: {
       content: {
         'application/json': {
-          schema: z.object({
-            error: z.string()
-          })
+          schema: NotFoundResponseSchema
         }
       },
       description: 'Mobile suit not found'
@@ -168,9 +176,7 @@ const updateMobileSuitRoute = createRoute({
     410: {
       content: {
         'application/json': {
-          schema: z.object({
-            error: z.string()
-          })
+          schema: GoneResponseSchema
         }
       },
       description: 'Mobile suit has been deleted'
@@ -192,9 +198,7 @@ const deleteMobileSuitRoute = createRoute({
     200: {
       content: {
         'application/json': {
-          schema: z.object({
-            message: z.string()
-          })
+          schema: MessageResponseSchema
         }
       },
       description: 'Mobile suit deleted successfully'
@@ -202,9 +206,7 @@ const deleteMobileSuitRoute = createRoute({
     404: {
       content: {
         'application/json': {
-          schema: z.object({
-            error: z.string()
-          })
+          schema: NotFoundResponseSchema
         }
       },
       description: 'Mobile suit not found'
@@ -212,130 +214,74 @@ const deleteMobileSuitRoute = createRoute({
   }
 })
 
-// Helper function to format dates
-const formatDates = (item: any) => ({
-  ...item,
-  createdAt: item.createdAt?.toISOString() ?? null,
-  updatedAt: item.updatedAt?.toISOString() ?? null,
-  deletedAt: item.deletedAt?.toISOString() ?? null
-})
+// Controllers
+const getMobileSuitsController = async (c: Context) => {
+  const seriesId = c.req.query('seriesId')
+  const result = await mobileSuitService.getMobileSuits(seriesId ? Number(seriesId) : undefined)
+  
+  if (result.error) {
+    return c.json({ error: result.error }, result.status as 404)
+  }
+  
+  return c.json(result.data, 200)
+}
+
+const getMobileSuitByIdController = async (c: Context) => {
+  const id = Number(c.req.param('id'))
+  const result = await mobileSuitService.getMobileSuitById(id)
+  
+  if (result.error) {
+    return c.json({ error: result.error }, result.status as 404 | 410)
+  }
+  
+  return c.json(result.data, 200)
+}
+
+const createMobileSuitController = async (c: Context) => {
+  const body = await c.req.json()
+  const result = await mobileSuitService.createMobileSuit(body)
+  
+  if (result.error) {
+    return c.json({ error: result.error }, 400)
+  }
+  
+  if (!result.data) {
+    return c.json({ error: 'Failed to create mobile suit' }, 500)
+  }
+  
+  return c.json(result.data, 201, {
+    'Location': `/api/v1/mobile-suits/${result.data.id}`
+  })
+}
+
+const updateMobileSuitController = async (c: Context) => {
+  const id = Number(c.req.param('id'))
+  const body = await c.req.json()
+  const result = await mobileSuitService.updateMobileSuit(id, body)
+  
+  if (result.error) {
+    return c.json({ error: result.error }, result.status as 400 | 404 | 410)
+  }
+  
+  return c.json(result.data, 200)
+}
+
+const deleteMobileSuitController = async (c: Context) => {
+  const id = Number(c.req.param('id'))
+  const result = await mobileSuitService.deleteMobileSuit(id)
+  
+  if (result.error) {
+    return c.json({ error: result.error }, 404)
+  }
+  
+  return c.json({ message: 'Mobile suit deleted successfully' }, 200)
+}
 
 // Route handlers
-router.openapi(getMobileSuitsRoute, async (c) => {
-  const seriesId = c.req.query('seriesId')
-  const conditions = [isNull(mobileSuit.deletedAt)]
-  
-  if (seriesId) {
-    // Check if series exists
-    const seriesExists = await db.select().from(series)
-      .where(and(
-        eq(series.id, Number(seriesId)),
-        isNull(series.deletedAt)
-      ))
-      .limit(1)
-    
-    if (seriesExists.length === 0) {
-      return c.json({ error: 'Series not found' }, 404)
-    }
-    
-    conditions.push(eq(mobileSuit.seriesId, Number(seriesId)))
-  }
-  
-  const allMobileSuits = await db.select().from(mobileSuit).where(and(...conditions))
-  return c.json(allMobileSuits.map(formatDates), 200)
-})
-
-router.openapi(getMobileSuitByIdRoute, async (c) => {
-  const id = Number(c.req.param('id'))
-  const result = await db.select().from(mobileSuit).where(eq(mobileSuit.id, id))
-  
-  if (result.length === 0) {
-    return c.json({ error: 'Mobile suit not found' }, 404)
-  }
-
-  const mobileSuitItem = result[0]
-  if (mobileSuitItem.deletedAt) {
-    return c.json({ error: 'Mobile suit has been deleted' }, 410)
-  }
-  
-  return c.json(formatDates(mobileSuitItem))
-})
-
-router.openapi(createMobileSuitRoute, async (c) => {
-  const body = await c.req.json()
-  const { name, modelNumber, manufacturer, height, weight, armorMaterial, powerPlant, seriesId } = body
-
-  if (!name) {
-    return c.json({ error: 'Name is required' }, 400)
-  }
-
-  const result = await db.insert(mobileSuit).values({
-    name,
-    modelNumber,
-    manufacturer,
-    height,
-    weight,
-    armorMaterial,
-    powerPlant,
-    seriesId
-  }).returning()
-
-  const newMobileSuit = result[0]
-  return c.json(formatDates(newMobileSuit), 201, {
-    'Location': `/api/v1/mobile-suits/${newMobileSuit.id}`
-  })
-})
-
-router.openapi(updateMobileSuitRoute, async (c) => {
-  const id = Number(c.req.param('id'))
-  const body = await c.req.json()
-  const { name, modelNumber, manufacturer, height, weight, armorMaterial, powerPlant, seriesId } = body
-
-  if (!name) {
-    return c.json({ error: 'Name is required' }, 400)
-  }
-
-  const result = await db.update(mobileSuit)
-    .set({
-      name,
-      modelNumber,
-      manufacturer,
-      height,
-      weight,
-      armorMaterial,
-      powerPlant,
-      seriesId,
-      updatedAt: new Date()
-    })
-    .where(eq(mobileSuit.id, id))
-    .returning()
-
-  if (result.length === 0) {
-    return c.json({ error: 'Mobile suit not found' }, 404)
-  }
-
-  const updatedMobileSuit = result[0]
-  if (updatedMobileSuit.deletedAt) {
-    return c.json({ error: 'Mobile suit has been deleted' }, 410)
-  }
-
-  return c.json(formatDates(updatedMobileSuit))
-})
-
-router.openapi(deleteMobileSuitRoute, async (c) => {
-  const id = Number(c.req.param('id'))
-  const result = await db.update(mobileSuit)
-    .set({
-      deletedAt: new Date()
-    })
-    .where(eq(mobileSuit.id, id))
-    .returning()
-
-  if (result.length === 0) {
-    return c.json({ error: 'Mobile suit not found' }, 404)
-  }
-
-  return c.json({ message: 'Mobile suit deleted successfully' }, 200)
-})
+router.openapi(getMobileSuitsRoute, getMobileSuitsController)
+router.openapi(getMobileSuitByIdRoute, getMobileSuitByIdController)
+router.openapi(createMobileSuitRoute, createMobileSuitController)
+router.openapi(updateMobileSuitRoute, updateMobileSuitController)
+router.openapi(deleteMobileSuitRoute, deleteMobileSuitController)
 
 export default router 

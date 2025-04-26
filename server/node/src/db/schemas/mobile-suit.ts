@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, integer, decimal, timestamp } from 'drizzle-orm/pg-core'
+import { pgTable, serial, varchar, integer, real, timestamp } from 'drizzle-orm/pg-core'
 import { series } from './series.js'
 
 export const mobileSuit = pgTable('mobile_suit', {
@@ -6,8 +6,8 @@ export const mobileSuit = pgTable('mobile_suit', {
   name: varchar('name', { length: 100 }).notNull(),
   modelNumber: varchar('model_number', { length: 50 }),
   manufacturer: varchar('manufacturer', { length: 100 }),
-  height: decimal('height', { precision: 5, scale: 2 }),
-  weight: decimal('weight', { precision: 6, scale: 2 }),
+  height: real('height'),
+  weight: real('weight'),
   armorMaterial: varchar('armor_material', { length: 50 }),
   powerPlant: varchar('power_plant', { length: 100 }),
   seriesId: integer('series_id').references(() => series.id),
