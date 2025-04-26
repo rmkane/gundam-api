@@ -1,40 +1,80 @@
-.PHONY: start stop restart status logs logs-api logs-db psql purge cleanup
+.DEFAULT_GOAL := help
 
-# Start the services
-start:
-	docker-compose up --build --detach
+# Service names
+API_SERVICE := api
+DB_SERVICE := postgres
+DB_NAME := gundam_db
+DB_USER := postgres
+DB_VOLUME := gundam-api_postgres_data
 
-# Stop the services
-stop:
-	docker-compose down
+# Phony targets by group
+.PHONY: start stop restart status
+.PHONY: logs logs-api logs-db
+.PHONY: psql purge cleanup
+.PHONY: check-env check-docker logs-timestamp
+.PHONY: help
 
-# Restart the services
-restart: stop start
+# Service Management
+start: # Start the services
+	docker compose up --build --detach
 
-# Show services status
-status:
-	docker-compose ps
+stop: # Stop the services
+	docker compose down
 
-# Show all logs
-logs:
-	docker-compose logs -f
+restart: stop start # Restart the services
 
-# Show API logs
-logs-api:
-	docker-compose logs -f api
+status: # Show services status
+	docker compose ps
 
-# Show database logs
-logs-db:
-	docker-compose logs -f postgres
+# Logging
+logs: # Show all logs
+	docker compose logs -f
 
-# Connect to database with psql
-psql:
-	docker-compose exec postgres psql -U postgres -d gundam_db
+logs-api: # Show API logs
+	docker compose logs -f $(API_SERVICE)
 
-# Purge database volume
-purge: stop
-	docker volume rm gundam-api_postgres_data
+logs-db: # Show database logs
+	docker compose logs -f $(DB_SERVICE)
 
-# Cleanup soft-deleted records
-cleanup:
-	docker-compose exec postgres psql -U postgres -d gundam_db -f /docker-entrypoint-initdb.d/cleanup.sql 
+logs-timestamp: # Show logs with timestamps
+	docker compose logs -f --timestamps
+
+# Database Management
+psql: # Connect to database with psql
+	docker compose exec $(DB_SERVICE) psql -U $(DB_USER) -d $(DB_NAME)
+
+purge: stop # Purge database volume
+	@echo "Purging database volume..."
+	@if docker volume inspect $(DB_VOLUME) >/dev/null 2>&1; then \
+		docker volume rm $(DB_VOLUME) && echo "Volume purged successfully"; \
+	else \
+		echo "Volume does not exist"; \
+	fi
+
+cleanup: # Cleanup soft-deleted records
+	docker compose exec $(DB_SERVICE) psql -U $(DB_USER) -d $(DB_NAME) -f /docker-entrypoint-initdb.d/cleanup.sql
+
+# System Checks
+check-env: # Show environment variables
+	@echo "Environment Variables:"
+	@echo "API_SERVICE: $(API_SERVICE)"
+	@echo "DB_SERVICE: $(DB_SERVICE)"
+	@echo "DB_NAME: $(DB_NAME)"
+	@echo "DB_USER: $(DB_USER)"
+	@echo "DB_VOLUME: $(DB_VOLUME)"
+
+check-docker: # Check Docker status
+	@echo "Checking Docker status..."
+	@if docker info >/dev/null 2>&1; then \
+		echo "Docker is running"; \
+	else \
+		echo "Docker is not running"; \
+		exit 1; \
+	fi
+
+# Help
+help: # Show help information
+	@echo "Usage: make \033[36m[target]\033[0m"
+	@echo ""
+	@echo "Available commands:"
+	@awk 'BEGIN {FS = ":.*?# "} /^[a-zA-Z_-]+:.*?# / {printf "\033[36m%-16s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
