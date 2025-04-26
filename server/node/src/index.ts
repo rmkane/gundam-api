@@ -1,5 +1,8 @@
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
+import seriesRouter from './routes/series.js'
+import pilotsRouter from './routes/pilots.js'
+import mobileSuitsRouter from './routes/mobile-suits.js'
 
 const app = new Hono()
 
@@ -18,6 +21,11 @@ app.get('/health', (c) => {
     timestamp: new Date().toISOString()
   })
 })
+
+// API routes
+app.route('/api/series', seriesRouter)
+app.route('/api/pilots', pilotsRouter)
+app.route('/api/mobile-suits', mobileSuitsRouter)
 
 const port = process.env.PORT || 3000
 

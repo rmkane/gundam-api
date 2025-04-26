@@ -1,17 +1,17 @@
-.PHONY: up down restart status logs psql purge
+.PHONY: start stop restart status logs psql purge
 
-# Start the database
-up:
-	docker-compose up -d
+# Start the services
+start:
+	docker-compose up --build --detach
 
-# Stop the database
-down:
+# Stop the services
+stop:
 	docker-compose down
 
-# Restart the database
-restart: down up
+# Restart the services
+restart: stop start
 
-# Show database status
+# Show services status
 status:
 	docker-compose ps
 
@@ -24,5 +24,5 @@ psql:
 	docker-compose exec postgres psql -U postgres -d gundam_db
 
 # Purge database volume
-purge: down
+purge: stop
 	docker volume rm gundam-api_postgres_data 

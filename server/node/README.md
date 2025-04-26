@@ -5,26 +5,31 @@ A simple API built with Hono and TypeScript.
 ## Setup
 
 1. Install pnpm (if not already installed):
+
 ```bash
 npm install -g pnpm
 ```
 
-2. Install dependencies:
+1. Install dependencies:
+
 ```bash
 pnpm install
 ```
 
-3. Development mode:
+1. Development mode:
+
 ```bash
 pnpm dev
 ```
 
-4. Build for production:
+1. Build for production:
+
 ```bash
 pnpm build
 ```
 
-5. Start production server:
+1. Start production server:
+
 ```bash
 pnpm start
 ```
