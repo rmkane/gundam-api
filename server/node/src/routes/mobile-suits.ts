@@ -2,39 +2,11 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { z } from 'zod'
 import { createRoute } from '@hono/zod-openapi'
 import { db } from '../db/index.js'
-import { mobileSuit, series } from '../db/schema.js'
+import { mobileSuit, series } from '../db/schemas/index.js'
 import { eq, isNull, and } from 'drizzle-orm'
+import { MobileSuitSchema, CreateMobileSuitSchema, UpdateMobileSuitSchema } from '../schemas/index.js'
 
 const router = new OpenAPIHono()
-
-// Schema definitions
-const MobileSuitSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  modelNumber: z.string().nullable(),
-  manufacturer: z.string().nullable(),
-  height: z.number().nullable(),
-  weight: z.number().nullable(),
-  armorMaterial: z.string().nullable(),
-  powerPlant: z.string().nullable(),
-  seriesId: z.number().nullable(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-  deletedAt: z.string().datetime().nullable()
-})
-
-const CreateMobileSuitSchema = z.object({
-  name: z.string(),
-  modelNumber: z.string().optional(),
-  manufacturer: z.string().optional(),
-  height: z.number().optional(),
-  weight: z.number().optional(),
-  armorMaterial: z.string().optional(),
-  powerPlant: z.string().optional(),
-  seriesId: z.number().optional()
-})
-
-const UpdateMobileSuitSchema = CreateMobileSuitSchema
 
 // Route definitions
 const getMobileSuitsRoute = createRoute({

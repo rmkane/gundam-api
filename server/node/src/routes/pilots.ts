@@ -2,31 +2,11 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { z } from 'zod'
 import { createRoute } from '@hono/zod-openapi'
 import { db } from '../db/index.js'
-import { pilot, series } from '../db/schema.js'
+import { pilot, series } from '../db/schemas/index.js'
 import { eq, isNull, and } from 'drizzle-orm'
+import { PilotSchema, CreatePilotSchema, UpdatePilotSchema } from '../schemas/index.js'
 
 const router = new OpenAPIHono()
-
-// Schema definitions
-const PilotSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  codename: z.string().nullable(),
-  affiliation: z.string().nullable(),
-  seriesId: z.number().nullable(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-  deletedAt: z.string().datetime().nullable()
-})
-
-const CreatePilotSchema = z.object({
-  name: z.string(),
-  codename: z.string().optional(),
-  affiliation: z.string().optional(),
-  seriesId: z.number().optional()
-})
-
-const UpdatePilotSchema = CreatePilotSchema
 
 // Route definitions
 const getPilotsRoute = createRoute({
