@@ -6,32 +6,62 @@ A simple API built with Hono and TypeScript.
 
 1. Install pnpm (if not already installed):
 
+    ```bash
+    npm install -g pnpm
+    ```
+
+2. Install dependencies:
+
+    ```bash
+    pnpm install
+    ```
+
+3. Set up environment variables:
+
+    ```bash
+    # Generate the initial .env file with default values
+    ./scripts/generate-env.sh
+
+    # Review and modify the .env file as needed
+    ```
+
+4. Development mode:
+
+    ```bash
+    pnpm dev
+    ```
+
+5. Build for production:
+
+    ```bash
+    pnpm build
+    ```
+
+6. Start production server:
+
+    ```bash
+    pnpm start
+    ```
+
+## Database Migrations
+
+Before running any Drizzle migration commands, you must:
+
+1. Generate the initial `.env` file using the script above
+2. Build the project to compile TypeScript files:
+
+    ```bash
+    pnpm build
+    ```
+
+Then you can run the migration commands:
+
 ```bash
-npm install -g pnpm
-```
+# Generate migration files
+pnpm db:generate
 
-1. Install dependencies:
-
-```bash
-pnpm install
-```
-
-1. Development mode:
-
-```bash
-pnpm dev
-```
-
-1. Build for production:
-
-```bash
-pnpm build
-```
-
-1. Start production server:
-
-```bash
-pnpm start
+# Push migrations to the database
+pnpm db:push
 ```
 
 ## Available Routes
