@@ -41,4 +41,4 @@ pnpm start
 
 ## Development
 
-The server will automatically restart when you make changes to the source code in development mode. 
+The server will automatically restart when you make changes to the source code in development mode.
