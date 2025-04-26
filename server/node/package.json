@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "Gundam API using Hono",
   "type": "module",
+  "private": true,
+  "license": "GPL-3.0-or-later",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
