@@ -1,4 +1,4 @@
-.PHONY: start stop restart status logs psql purge cleanup
+.PHONY: start stop restart status logs logs-api logs-db psql purge cleanup
 
 # Start the services
 start:
@@ -15,8 +15,16 @@ restart: stop start
 status:
 	docker-compose ps
 
-# Show database logs
+# Show all logs
 logs:
+	docker-compose logs -f
+
+# Show API logs
+logs-api:
+	docker-compose logs -f api
+
+# Show database logs
+logs-db:
 	docker-compose logs -f postgres
 
 # Connect to database with psql
