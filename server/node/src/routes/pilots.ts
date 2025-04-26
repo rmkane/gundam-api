@@ -10,6 +10,7 @@ import {
   UpdatePilotResponseSchema,
   UpdatePilotSchema,
 } from '../schemas/index.js'
+import { BooleanParamSchema, NumberParamSchema } from '../schemas/request/query.js'
 import {
   BadRequestResponseSchema,
   GoneResponseSchema,
@@ -28,7 +29,8 @@ const getPilotsRoute = createRoute({
   description: 'Get all pilots',
   request: {
     query: z.object({
-      seriesId: z.string().transform(Number).optional(),
+      seriesId: NumberParamSchema.optional(),
+      includeDeleted: BooleanParamSchema.describe('Include deleted pilots in the response'),
     }),
   },
   responses: {
@@ -58,7 +60,7 @@ const getPilotByIdRoute = createRoute({
   description: 'Get a pilot by ID',
   request: {
     params: z.object({
-      id: z.string().transform(Number),
+      id: NumberParamSchema,
     }),
   },
   responses: {
@@ -212,7 +214,11 @@ const deletePilotRoute = createRoute({
 // Controllers
 const getPilotsController = async (c: Context) => {
   const seriesId = c.req.query('seriesId')
-  const result = await pilotService.getPilots(seriesId ? Number(seriesId) : undefined)
+  const includeDeleted = c.req.query('includeDeleted') === 'true'
+  const result = await pilotService.getPilots(
+    seriesId ? Number(seriesId) : undefined,
+    includeDeleted
+  )
 
   if (result.error) {
     return c.json({ error: result.error }, result.status as 404)

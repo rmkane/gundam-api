@@ -9,16 +9,16 @@ import { formatDates } from '../utils/format-dates.js'
 type CreatePilotData = z.infer<typeof CreatePilotSchema>
 type UpdatePilotData = z.infer<typeof UpdatePilotSchema>
 
-export const getPilots = async (seriesId?: number) => {
-  const conditions = [isNull(pilot.deletedAt)]
+export const getPilots = async (seriesId?: number, includeDeleted = false) => {
+  const conditions = []
+
+  if (!includeDeleted) {
+    conditions.push(isNull(pilot.deletedAt))
+  }
 
   if (seriesId) {
     // Check if series exists
-    const seriesExists = await db
-      .select()
-      .from(series)
-      .where(and(eq(series.id, seriesId), isNull(series.deletedAt)))
-      .limit(1)
+    const seriesExists = await db.select().from(series).where(eq(series.id, seriesId)).limit(1)
 
     if (seriesExists.length === 0) {
       return { error: 'Series not found', status: 404 }
@@ -30,7 +30,7 @@ export const getPilots = async (seriesId?: number) => {
   const allPilots = await db
     .select()
     .from(pilot)
-    .where(and(...conditions))
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
   return { data: allPilots.map(formatDates), status: 200 }
 }
 

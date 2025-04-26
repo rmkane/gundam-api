@@ -9,6 +9,7 @@ import {
   SeriesResponseSchema,
   UpdateSeriesResponseSchema,
 } from '../schemas/index.js'
+import { BooleanParamSchema, NumberParamSchema } from '../schemas/request/query.js'
 import {
   BadRequestResponseSchema,
   GoneResponseSchema,
@@ -25,6 +26,11 @@ const getSeriesRoute = createRoute({
   path: '/',
   tags: ['Series'],
   description: 'Get all series',
+  request: {
+    query: z.object({
+      includeDeleted: BooleanParamSchema.describe('Include deleted series in the response'),
+    }),
+  },
   responses: {
     200: {
       content: {
@@ -44,7 +50,7 @@ const getSeriesByIdRoute = createRoute({
   description: 'Get a series by ID',
   request: {
     params: z.object({
-      id: z.string().transform(Number),
+      id: NumberParamSchema,
     }),
   },
   responses: {
@@ -124,7 +130,7 @@ const updateSeriesRoute = createRoute({
   description: 'Update a series',
   request: {
     params: z.object({
-      id: z.string().transform(Number),
+      id: NumberParamSchema,
     }),
     body: {
       content: {
@@ -177,7 +183,7 @@ const deleteSeriesRoute = createRoute({
   description: 'Delete a series (soft delete)',
   request: {
     params: z.object({
-      id: z.string().transform(Number),
+      id: NumberParamSchema,
     }),
   },
   responses: {
@@ -197,8 +203,8 @@ const deleteSeriesRoute = createRoute({
 
 // Controllers
 const getSeriesController = async (c: Context) => {
-  const series = await seriesService.getSeries()
-  // TODO: DO THIS WITH THE OTHER ROUTES
+  const includeDeleted = c.req.query('includeDeleted') === 'true'
+  const series = await seriesService.getSeries(includeDeleted)
   return c.json({ data: series, meta: { page: 1, pageSize: 10, total: series.length } }, 200)
 }
 

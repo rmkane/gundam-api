@@ -9,8 +9,12 @@ import { formatDates } from '../utils/format-dates.js'
 type CreateMobileSuitData = z.infer<typeof CreateMobileSuitSchema>
 type UpdateMobileSuitData = z.infer<typeof UpdateMobileSuitSchema>
 
-export const getMobileSuits = async (seriesId?: number) => {
-  const conditions = [isNull(mobileSuit.deletedAt)]
+export const getMobileSuits = async (seriesId?: number, includeDeleted = false) => {
+  const conditions = []
+
+  if (!includeDeleted) {
+    conditions.push(isNull(mobileSuit.deletedAt))
+  }
 
   if (seriesId) {
     // Check if series exists
@@ -30,7 +34,7 @@ export const getMobileSuits = async (seriesId?: number) => {
   const allMobileSuits = await db
     .select()
     .from(mobileSuit)
-    .where(and(...conditions))
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
   return { data: allMobileSuits.map(formatDates), status: 200 }
 }
 

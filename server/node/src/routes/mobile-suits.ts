@@ -10,6 +10,7 @@ import {
   UpdateMobileSuitResponseSchema,
   UpdateMobileSuitSchema,
 } from '../schemas/index.js'
+import { BooleanParamSchema, NumberParamSchema } from '../schemas/request/query.js'
 import {
   BadRequestResponseSchema,
   GoneResponseSchema,
@@ -28,7 +29,8 @@ const getMobileSuitsRoute = createRoute({
   description: 'Get all mobile suits',
   request: {
     query: z.object({
-      seriesId: z.string().transform(Number).optional(),
+      seriesId: NumberParamSchema.optional(),
+      includeDeleted: BooleanParamSchema.describe('Include deleted mobile suits in the response'),
     }),
   },
   responses: {
@@ -58,7 +60,7 @@ const getMobileSuitByIdRoute = createRoute({
   description: 'Get a mobile suit by ID',
   request: {
     params: z.object({
-      id: z.string().transform(Number),
+      id: NumberParamSchema,
     }),
   },
   responses: {
@@ -98,10 +100,7 @@ const createMobileSuitRoute = createRoute({
     body: {
       content: {
         'application/json': {
-          schema: CreateMobileSuitSchema.extend({
-            height: z.number().nullable(),
-            weight: z.number().nullable(),
-          }),
+          schema: CreateMobileSuitSchema,
         },
       },
     },
@@ -141,15 +140,12 @@ const updateMobileSuitRoute = createRoute({
   description: 'Update a mobile suit',
   request: {
     params: z.object({
-      id: z.string().transform(Number),
+      id: NumberParamSchema,
     }),
     body: {
       content: {
         'application/json': {
-          schema: UpdateMobileSuitSchema.extend({
-            height: z.number().nullable(),
-            weight: z.number().nullable(),
-          }),
+          schema: UpdateMobileSuitSchema,
         },
       },
     },
@@ -218,7 +214,11 @@ const deleteMobileSuitRoute = createRoute({
 // Controllers
 const getMobileSuitsController = async (c: Context) => {
   const seriesId = c.req.query('seriesId')
-  const result = await mobileSuitService.getMobileSuits(seriesId ? Number(seriesId) : undefined)
+  const includeDeleted = c.req.query('includeDeleted') === 'true'
+  const result = await mobileSuitService.getMobileSuits(
+    seriesId ? Number(seriesId) : undefined,
+    includeDeleted
+  )
 
   if (result.error) {
     return c.json({ error: result.error }, result.status as 404)
