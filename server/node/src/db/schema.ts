@@ -8,6 +8,7 @@ export const series = pgTable('series', {
   description: text('description'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
+  deletedAt: timestamp('deleted_at')
 })
 
 export const pilot = pgTable('pilot', {
@@ -18,6 +19,7 @@ export const pilot = pgTable('pilot', {
   seriesId: integer('series_id').references(() => series.id),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
+  deletedAt: timestamp('deleted_at')
 })
 
 export const mobileSuit = pgTable('mobile_suit', {
@@ -32,6 +34,7 @@ export const mobileSuit = pgTable('mobile_suit', {
   seriesId: integer('series_id').references(() => series.id),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
+  deletedAt: timestamp('deleted_at')
 })
 
 export const pilotMobileSuit = pgTable('pilot_mobile_suit', {

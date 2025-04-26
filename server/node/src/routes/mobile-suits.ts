@@ -1,13 +1,13 @@
 import { Hono } from 'hono'
 import { db } from '../db/index.js'
 import { mobileSuit } from '../db/schema.js'
-import { eq } from 'drizzle-orm'
+import { eq, isNull, and } from 'drizzle-orm'
 
 const router = new Hono()
 
 // Get all mobile suits
 router.get('/', async (c) => {
-  const allMobileSuits = await db.select().from(mobileSuit)
+  const allMobileSuits = await db.select().from(mobileSuit).where(isNull(mobileSuit.deletedAt))
   return c.json(allMobileSuits)
 })
 
@@ -19,14 +19,23 @@ router.get('/:id', async (c) => {
   if (result.length === 0) {
     return c.json({ error: 'Mobile suit not found' }, 404)
   }
+
+  const mobileSuitItem = result[0]
+  if (mobileSuitItem.deletedAt) {
+    return c.json({ error: 'Mobile suit has been deleted' }, 410)
+  }
   
-  return c.json(result[0])
+  return c.json(mobileSuitItem)
 })
 
 // Get mobile suits by series ID
 router.get('/series/:seriesId', async (c) => {
   const seriesId = Number(c.req.param('seriesId'))
-  const mobileSuits = await db.select().from(mobileSuit).where(eq(mobileSuit.seriesId, seriesId))
+  const mobileSuits = await db.select().from(mobileSuit)
+    .where(and(
+      eq(mobileSuit.seriesId, seriesId),
+      isNull(mobileSuit.deletedAt)
+    ))
   return c.json(mobileSuits)
 })
 
@@ -50,7 +59,10 @@ router.post('/', async (c) => {
     seriesId
   }).returning()
 
-  return c.json(result[0], 201)
+  const newMobileSuit = result[0]
+  return c.json(newMobileSuit, 201, {
+    'Location': `/api/mobile-suits/${newMobileSuit.id}`
+  })
 })
 
 // Update mobile suit
@@ -82,13 +94,21 @@ router.put('/:id', async (c) => {
     return c.json({ error: 'Mobile suit not found' }, 404)
   }
 
-  return c.json(result[0])
+  const updatedMobileSuit = result[0]
+  if (updatedMobileSuit.deletedAt) {
+    return c.json({ error: 'Mobile suit has been deleted' }, 410)
+  }
+
+  return c.json(updatedMobileSuit)
 })
 
 // Delete mobile suit
 router.delete('/:id', async (c) => {
   const id = Number(c.req.param('id'))
-  const result = await db.delete(mobileSuit)
+  const result = await db.update(mobileSuit)
+    .set({
+      deletedAt: new Date()
+    })
     .where(eq(mobileSuit.id, id))
     .returning()
 

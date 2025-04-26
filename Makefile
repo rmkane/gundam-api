@@ -1,4 +1,4 @@
-.PHONY: start stop restart status logs psql purge
+.PHONY: start stop restart status logs psql purge cleanup
 
 # Start the services
 start:
@@ -25,4 +25,8 @@ psql:
 
 # Purge database volume
 purge: stop
-	docker volume rm gundam-api_postgres_data 
+	docker volume rm gundam-api_postgres_data
+
+# Cleanup soft-deleted records
+cleanup:
+	docker-compose exec postgres psql -U postgres -d gundam_db -f /docker-entrypoint-initdb.d/cleanup.sql 
