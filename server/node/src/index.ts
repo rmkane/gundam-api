@@ -1,31 +1,15 @@
 import { serve } from '@hono/node-server'
-import { Hono } from 'hono'
-import seriesRouter from './routes/series.js'
-import pilotsRouter from './routes/pilots.js'
-import mobileSuitsRouter from './routes/mobile-suits.js'
+import { OpenAPIHono } from '@hono/zod-openapi'
+import { rootRouter } from './routes/root.js'
+import { v1Router } from './routes/v1.js'
 
-const app = new Hono()
+const app = new OpenAPIHono()
 
-// Simple GET route
-app.get('/', (c) => {
-  return c.json({
-    message: 'Welcome to the Gundam API',
-    version: '1.0.0'
-  })
-})
+// Mount root routes
+app.route('/', rootRouter)
 
-// Health check route
-app.get('/health', (c) => {
-  return c.json({
-    status: 'ok',
-    timestamp: new Date().toISOString()
-  })
-})
-
-// API routes
-app.route('/api/series', seriesRouter)
-app.route('/api/pilots', pilotsRouter)
-app.route('/api/mobile-suits', mobileSuitsRouter)
+// Mount v1 router
+app.route('/api/v1', v1Router)
 
 const port = process.env.PORT || 3000
 

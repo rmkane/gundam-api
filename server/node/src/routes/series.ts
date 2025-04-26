@@ -1,18 +1,237 @@
-import { Hono } from 'hono'
+import { OpenAPIHono } from '@hono/zod-openapi'
+import { z } from 'zod'
+import { createRoute } from '@hono/zod-openapi'
 import { db } from '../db/index.js'
 import { series } from '../db/schema.js'
 import { eq, isNull } from 'drizzle-orm'
 
-const router = new Hono()
+const router = new OpenAPIHono()
 
-// Get all series
-router.get('/', async (c) => {
-  const allSeries = await db.select().from(series).where(isNull(series.deletedAt))
-  return c.json(allSeries)
+// Schema definitions
+const SeriesSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  yearStart: z.number().nullable(),
+  yearEnd: z.number().nullable(),
+  description: z.string().nullable(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+  deletedAt: z.string().datetime().nullable()
 })
 
-// Get series by ID
-router.get('/:id', async (c) => {
+const CreateSeriesSchema = z.object({
+  name: z.string(),
+  yearStart: z.number().optional(),
+  yearEnd: z.number().optional(),
+  description: z.string().optional()
+})
+
+const UpdateSeriesSchema = CreateSeriesSchema
+
+// Route definitions
+const getSeriesRoute = createRoute({
+  method: 'get',
+  path: '/',
+  tags: ['Series'],
+  description: 'Get all series',
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: z.array(SeriesSchema)
+        }
+      },
+      description: 'List of all series'
+    }
+  }
+})
+
+const getSeriesByIdRoute = createRoute({
+  method: 'get',
+  path: '/{id}',
+  tags: ['Series'],
+  description: 'Get a series by ID',
+  request: {
+    params: z.object({
+      id: z.string().transform(Number)
+    })
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: SeriesSchema
+        }
+      },
+      description: 'Series found'
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Series not found'
+    },
+    410: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Series has been deleted'
+    }
+  }
+})
+
+const createSeriesRoute = createRoute({
+  method: 'post',
+  path: '/',
+  tags: ['Series'],
+  description: 'Create a new series',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: CreateSeriesSchema
+        }
+      }
+    }
+  },
+  responses: {
+    201: {
+      content: {
+        'application/json': {
+          schema: SeriesSchema
+        }
+      },
+      description: 'Series created successfully'
+    },
+    400: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Invalid request body'
+    }
+  }
+})
+
+const updateSeriesRoute = createRoute({
+  method: 'put',
+  path: '/{id}',
+  tags: ['Series'],
+  description: 'Update a series',
+  request: {
+    params: z.object({
+      id: z.string().transform(Number)
+    }),
+    body: {
+      content: {
+        'application/json': {
+          schema: UpdateSeriesSchema
+        }
+      }
+    }
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: SeriesSchema
+        }
+      },
+      description: 'Series updated successfully'
+    },
+    400: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Invalid request body'
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Series not found'
+    },
+    410: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Series has been deleted'
+    }
+  }
+})
+
+const deleteSeriesRoute = createRoute({
+  method: 'delete',
+  path: '/{id}',
+  tags: ['Series'],
+  description: 'Delete a series (soft delete)',
+  request: {
+    params: z.object({
+      id: z.string().transform(Number)
+    })
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            message: z.string()
+          })
+        }
+      },
+      description: 'Series deleted successfully'
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.string()
+          })
+        }
+      },
+      description: 'Series not found'
+    }
+  }
+})
+
+// Helper function to format dates
+const formatDates = (item: any) => ({
+  ...item,
+  createdAt: item.createdAt?.toISOString() ?? null,
+  updatedAt: item.updatedAt?.toISOString() ?? null,
+  deletedAt: item.deletedAt?.toISOString() ?? null
+})
+
+// Route handlers
+router.openapi(getSeriesRoute, async (c) => {
+  const allSeries = await db.select().from(series).where(isNull(series.deletedAt))
+  return c.json(allSeries.map(formatDates))
+})
+
+router.openapi(getSeriesByIdRoute, async (c) => {
   const id = Number(c.req.param('id'))
   const result = await db.select().from(series).where(eq(series.id, id))
   
@@ -25,11 +244,10 @@ router.get('/:id', async (c) => {
     return c.json({ error: 'Series has been deleted' }, 410)
   }
   
-  return c.json(seriesItem)
+  return c.json(formatDates(seriesItem))
 })
 
-// Create new series
-router.post('/', async (c) => {
+router.openapi(createSeriesRoute, async (c) => {
   const body = await c.req.json()
   const { name, yearStart, yearEnd, description } = body
 
@@ -45,13 +263,12 @@ router.post('/', async (c) => {
   }).returning()
 
   const newSeries = result[0]
-  return c.json(newSeries, 201, {
-    'Location': `/api/series/${newSeries.id}`
+  return c.json(formatDates(newSeries), 201, {
+    'Location': `/api/v1/series/${newSeries.id}`
   })
 })
 
-// Update series
-router.put('/:id', async (c) => {
+router.openapi(updateSeriesRoute, async (c) => {
   const id = Number(c.req.param('id'))
   const body = await c.req.json()
   const { name, yearStart, yearEnd, description } = body
@@ -80,11 +297,10 @@ router.put('/:id', async (c) => {
     return c.json({ error: 'Series has been deleted' }, 410)
   }
 
-  return c.json(updatedSeries)
+  return c.json(formatDates(updatedSeries))
 })
 
-// Delete series
-router.delete('/:id', async (c) => {
+router.openapi(deleteSeriesRoute, async (c) => {
   const id = Number(c.req.param('id'))
   const result = await db.update(series)
     .set({
@@ -97,7 +313,7 @@ router.delete('/:id', async (c) => {
     return c.json({ error: 'Series not found' }, 404)
   }
 
-  return c.json({ message: 'Series deleted successfully' })
+  return c.json({ message: 'Series deleted successfully' }, 200)
 })
 
 export default router 

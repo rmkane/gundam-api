@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gundam API</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+        .endpoint {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+        .endpoint h3 {
+            margin: 0;
+            color: #2c3e50;
+        }
+        .endpoint p {
+            margin: 0.5rem 0;
+        }
+        .endpoint a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        .endpoint a:hover {
+            text-decoration: underline;
+        }
+        .endpoint .docs-link {
+            color: white;
+        }
+        .docs-link {
+            display: inline-block;
+            background: #3498db;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-top: 1rem;
+        }
+        .docs-link:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gundam API</h1>
+    <p>Welcome to the Gundam API! This API provides access to information about Gundam series, pilots, and mobile suits.</p>
+
+    <div class="endpoint">
+        <h3>API Documentation</h3>
+        <p>Explore the API documentation and try out the endpoints:</p>
+        <a href="/api/v1/docs" class="docs-link">View API Documentation</a>
+    </div>
+
+    <div class="endpoint">
+        <h3>Available Endpoints</h3>
+        <p><strong>Series:</strong> <a href="/api/v1/series">/api/v1/series</a></p>
+        <p><strong>Pilots:</strong> <a href="/api/v1/pilots">/api/v1/pilots</a></p>
+        <p><strong>Mobile Suits:</strong> <a href="/api/v1/mobile-suits">/api/v1/mobile-suits</a></p>
+    </div>
+
+    <div class="endpoint">
+        <h3>Health Check</h3>
+        <p>Check the API status: <a href="/health">/health</a></p>
+    </div>
+</body>
+</html> 
