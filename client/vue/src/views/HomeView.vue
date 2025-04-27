@@ -25,7 +25,7 @@
 
 h1 {
   margin-bottom: 2rem;
-  color: #2c3e50;
+  color: #fff;
 }
 
 .card-grid {
@@ -36,18 +36,20 @@ h1 {
 }
 
 .card {
-  background: white;
+  background: #1a1a1a;
   border-radius: 8px;
   padding: 2rem;
   text-decoration: none;
   color: inherit;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #333;
 }
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border-color: #42b983;
 }
 
 .card h2 {
@@ -56,7 +58,7 @@ h1 {
 }
 
 .card p {
-  color: #666;
+  color: #ccc;
   margin: 0;
 }
 </style> 
