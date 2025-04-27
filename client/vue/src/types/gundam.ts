@@ -1,4 +1,5 @@
 export interface Series {
+  id: number;
   name: string;
   yearStart: number;
   yearEnd: number;
@@ -7,6 +8,7 @@ export interface Series {
 }
 
 export interface Pilot {
+  id: number;
   name: string;
   codename: string;
   affiliation: string;
@@ -14,6 +16,7 @@ export interface Pilot {
 }
 
 export interface MobileSuit {
+  id: number;
   name: string;
   modelNumber: string;
   manufacturer: string;

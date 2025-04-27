@@ -24,6 +24,7 @@ const series = ref<Series[]>([])
 const searchTerm = ref('')
 
 const columnDefs = [
+  { field: 'id', headerName: 'ID', minWidth: 120, maxWidth: 120 },
   { field: 'name', headerName: 'Name' },
   { field: 'yearStart', headerName: 'Year Start' },
   { field: 'yearEnd', headerName: 'Year End' },

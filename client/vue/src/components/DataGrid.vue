@@ -17,7 +17,7 @@
         :paginationPageSize="10"
         :paginationPageSizeSelector="[10, 25, 50, 100]"
         :enableCellTextSelection="true"
-        :rowSelection="rowSelectionConfig"
+        :rowSelection="'single'"
         :modules="modules"
         @grid-ready="onGridReady"
       />
@@ -82,11 +82,6 @@ const defaultColDef: ColDef = {
   resizable: true,
   floatingFilter: true,
   flex: 1
-}
-
-// Updated row selection configuration
-const rowSelectionConfig = {
-  type: 'single'
 }
 
 const onGridReady = (params: GridReadyEvent) => {

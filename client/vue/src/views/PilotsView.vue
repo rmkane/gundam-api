@@ -18,16 +18,22 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import DataGrid from '../components/DataGrid.vue'
+import SeriesCellRenderer from '../components/SeriesCellRenderer.vue'
 import { Pilot, ApiResponse } from '../types/gundam'
 
 const pilots = ref<Pilot[]>([])
 const searchTerm = ref('')
 
 const columnDefs = [
+  { field: 'id', headerName: 'ID', minWidth: 120, maxWidth: 120 },
   { field: 'name', headerName: 'Name' },
   { field: 'codename', headerName: 'Codename' },
   { field: 'affiliation', headerName: 'Affiliation' },
-  { field: 'seriesId', headerName: 'Series' }
+  { 
+    field: 'seriesId', 
+    headerName: 'Series',
+    cellRenderer: SeriesCellRenderer
+  }
 ]
 
 const fetchPilots = async () => {
