@@ -1,9 +1,5 @@
 <template>
-  <DataGrid
-    title="Gundam Pilots"
-    :columnDefs="columnDefs"
-    :rowData="pilotStore.pilots"
-  >
+  <DataGrid title="Gundam Pilots" :columnDefs="columnDefs" :rowData="pilotStore.pilots">
     <template #filters>
       <input
         v-model="searchTerm"
@@ -17,6 +13,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+
 import DataGrid from '../components/DataGrid.vue'
 import SeriesCellRenderer from '../components/SeriesCellRenderer.vue'
 import { usePilotStore } from '../stores/pilotStore'
@@ -31,11 +28,11 @@ const columnDefs = [
   { field: 'name', headerName: 'Name' },
   { field: 'codename', headerName: 'Codename' },
   { field: 'affiliation', headerName: 'Affiliation' },
-  { 
-    field: 'seriesId', 
+  {
+    field: 'seriesId',
     headerName: 'Series',
-    cellRenderer: SeriesCellRenderer
-  }
+    cellRenderer: SeriesCellRenderer,
+  },
 ]
 
 const filterPilots = () => {
@@ -44,9 +41,6 @@ const filterPilots = () => {
 
 onMounted(async () => {
   // Fetch both pilots and series data
-  await Promise.all([
-    pilotStore.fetchPilots(),
-    seriesStore.fetchSeries()
-  ])
+  await Promise.all([pilotStore.fetchPilots(), seriesStore.fetchSeries()])
 })
-</script> 
+</script>

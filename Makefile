@@ -3,6 +3,9 @@
 # Service names
 API_SERVICE := api
 DB_SERVICE := postgres
+CLIENT_SERVICE := client
+
+# Database
 DB_NAME := gundam_db
 DB_USER := postgres
 DB_VOLUME := gundam-api_postgres_data
@@ -35,6 +38,9 @@ logs-api: # Show API logs
 
 logs-db: # Show database logs
 	docker compose logs -f $(DB_SERVICE)
+
+logs-client: # Show client logs
+	docker compose logs -f $(CLIENT_SERVICE)
 
 logs-timestamp: # Show logs with timestamps
 	docker compose logs -f --timestamps

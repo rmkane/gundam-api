@@ -5,10 +5,15 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
+
 import { useSeriesStore } from '../stores/seriesStore'
 
+interface CellRendererParams {
+  value: number
+}
+
 const props = defineProps<{
-  params: any
+  params: CellRendererParams
 }>()
 
 const seriesStore = useSeriesStore()
@@ -25,4 +30,4 @@ onMounted(() => {
 
 // Watch for changes in the series ID
 watch(() => props.params.value, updateSeriesName)
-</script> 
+</script>

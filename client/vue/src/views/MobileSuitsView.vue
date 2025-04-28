@@ -1,9 +1,5 @@
 <template>
-  <DataGrid
-    title="Mobile Suits"
-    :columnDefs="columnDefs"
-    :rowData="mobileSuitStore.mobileSuits"
-  >
+  <DataGrid title="Mobile Suits" :columnDefs="columnDefs" :rowData="mobileSuitStore.mobileSuits">
     <template #filters>
       <input
         v-model="searchTerm"
@@ -17,6 +13,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+
 import DataGrid from '../components/DataGrid.vue'
 import SeriesCellRenderer from '../components/SeriesCellRenderer.vue'
 import { useMobileSuitStore } from '../stores/mobileSuitStore'
@@ -35,11 +32,11 @@ const columnDefs = [
   { field: 'weight', headerName: 'Weight', minWidth: 140, maxWidth: 140 },
   { field: 'armorMaterial', headerName: 'Armor Material' },
   { field: 'powerPlant', headerName: 'Power Plant' },
-  { 
-    field: 'seriesId', 
+  {
+    field: 'seriesId',
     headerName: 'Series',
-    cellRenderer: SeriesCellRenderer
-  }
+    cellRenderer: SeriesCellRenderer,
+  },
 ]
 
 const filterMobileSuits = () => {
@@ -47,9 +44,6 @@ const filterMobileSuits = () => {
 }
 
 onMounted(async () => {
-  await Promise.all([
-    mobileSuitStore.fetchMobileSuits(),
-    seriesStore.fetchSeries()
-  ])
+  await Promise.all([mobileSuitStore.fetchMobileSuits(), seriesStore.fetchSeries()])
 })
-</script> 
+</script>

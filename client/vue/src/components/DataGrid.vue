@@ -26,7 +26,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
 import {
   ClientSideRowModelModule,
   ColDef,
@@ -34,7 +33,6 @@ import {
   CustomFilterModule,
   DateFilterModule,
   GridApi,
-  GridOptions,
   GridReadyEvent,
   ModuleRegistry,
   NumberFilterModule,
@@ -43,6 +41,7 @@ import {
   TextFilterModule,
   ValidationModule,
 } from 'ag-grid-community'
+import { ref, watch } from 'vue'
 
 // Register required modules
 ModuleRegistry.registerModules([
@@ -69,7 +68,7 @@ const modules = [
 
 const props = defineProps<{
   columnDefs: ColDef[]
-  rowData: any[]
+  rowData: unknown[]
   title: string
 }>()
 
@@ -90,39 +89,43 @@ const onGridReady = (params: GridReadyEvent) => {
 }
 
 // Watch for changes in rowData
-watch(() => props.rowData, (newValue, oldValue) => {
-  if (!gridApi.value) return
+watch(
+  () => props.rowData,
+  (newValue, oldValue) => {
+    if (!gridApi.value) return
 
-  // If it's the initial load, set the data
-  if (!oldValue || oldValue.length === 0) {
-    gridApi.value.setGridOption('rowData', newValue)
-    return
-  }
+    // If it's the initial load, set the data
+    if (!oldValue || oldValue.length === 0) {
+      gridApi.value.setGridOption('rowData', newValue)
+      return
+    }
 
-  // Find added, updated, and removed items
-  const added = newValue.filter(item => !oldValue.find(old => old.id === item.id))
-  const removed = oldValue.filter(item => !newValue.find(newItem => newItem.id === item.id))
-  const updated = newValue.filter(item => {
-    const oldItem = oldValue.find(old => old.id === item.id)
-    return oldItem && JSON.stringify(oldItem) !== JSON.stringify(item)
-  })
+    // Find added, updated, and removed items
+    const added = newValue.filter((item) => !oldValue.find((old) => old.id === item.id))
+    const removed = oldValue.filter((item) => !newValue.find((newItem) => newItem.id === item.id))
+    const updated = newValue.filter((item) => {
+      const oldItem = oldValue.find((old) => old.id === item.id)
+      return oldItem && JSON.stringify(oldItem) !== JSON.stringify(item)
+    })
 
-  // Apply transactions
-  if (added.length > 0) {
-    gridApi.value.applyTransaction({ add: added })
-  }
-  if (removed.length > 0) {
-    gridApi.value.applyTransaction({ remove: removed })
-  }
-  if (updated.length > 0) {
-    gridApi.value.applyTransaction({ update: updated })
-  }
-}, { deep: true })
+    // Apply transactions
+    if (added.length > 0) {
+      gridApi.value.applyTransaction({ add: added })
+    }
+    if (removed.length > 0) {
+      gridApi.value.applyTransaction({ remove: removed })
+    }
+    if (updated.length > 0) {
+      gridApi.value.applyTransaction({ update: updated })
+    }
+  },
+  { deep: true }
+)
 
 // Expose grid API to parent components
 defineExpose({
   getGridApi: () => gridApi.value,
-  getColumnApi: () => columnApi.value
+  getColumnApi: () => columnApi.value,
 })
 </script>
 
@@ -176,6 +179,8 @@ defineExpose({
   --ag-input-disabled-background-color: #2c2c2c;
   --ag-disabled-foreground-color: #666;
   --ag-font-size: 14px;
-  --ag-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --ag-font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
+    'Helvetica Neue', sans-serif;
 }
-</style> 
+</style>

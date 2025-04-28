@@ -1,9 +1,5 @@
 <template>
-  <DataGrid
-    title="Gundam Series"
-    :columnDefs="columnDefs"
-    :rowData="seriesStore.series"
-  >
+  <DataGrid title="Gundam Series" :columnDefs="columnDefs" :rowData="seriesStore.series">
     <template #filters>
       <input
         v-model="searchTerm"
@@ -17,6 +13,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+
 import DataGrid from '../components/DataGrid.vue'
 import { useSeriesStore } from '../stores/seriesStore'
 
@@ -28,7 +25,7 @@ const columnDefs = [
   { field: 'name', headerName: 'Name' },
   { field: 'yearStart', headerName: 'Year Start' },
   { field: 'yearEnd', headerName: 'Year End' },
-  { field: 'description', headerName: 'Description' }
+  { field: 'description', headerName: 'Description' },
 ]
 
 const filterSeries = () => {
