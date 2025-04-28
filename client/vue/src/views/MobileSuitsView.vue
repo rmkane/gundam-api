@@ -2,7 +2,7 @@
   <DataGrid
     title="Mobile Suits"
     :columnDefs="columnDefs"
-    :rowData="mobileSuits"
+    :rowData="mobileSuitStore.mobileSuits"
   >
     <template #filters>
       <input
@@ -19,9 +19,11 @@
 import { ref, onMounted } from 'vue'
 import DataGrid from '../components/DataGrid.vue'
 import SeriesCellRenderer from '../components/SeriesCellRenderer.vue'
-import { MobileSuit, ApiResponse } from '../types/gundam'
+import { useMobileSuitStore } from '../stores/mobileSuitStore'
+import { useSeriesStore } from '../stores/seriesStore'
 
-const mobileSuits = ref<MobileSuit[]>([])
+const mobileSuitStore = useMobileSuitStore()
+const seriesStore = useSeriesStore()
 const searchTerm = ref('')
 
 const columnDefs = [
@@ -40,30 +42,14 @@ const columnDefs = [
   }
 ]
 
-const fetchMobileSuits = async () => {
-  try {
-    console.log('Fetching mobile suits...')
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/mobile-suits`)
-    const result = await response.json() as ApiResponse<MobileSuit>
-    console.log('Received data:', result)
-    if (result.data && Array.isArray(result.data)) {
-      mobileSuits.value = result.data
-    } else {
-      console.error('Invalid data format received:', result)
-      mobileSuits.value = []
-    }
-  } catch (error) {
-    console.error('Error fetching mobile suits:', error)
-    mobileSuits.value = []
-  }
-}
-
 const filterMobileSuits = () => {
   // Implement filtering logic here
 }
 
-onMounted(() => {
-  console.log('Component mounted')
-  fetchMobileSuits()
+onMounted(async () => {
+  await Promise.all([
+    mobileSuitStore.fetchMobileSuits(),
+    seriesStore.fetchSeries()
+  ])
 })
 </script> 

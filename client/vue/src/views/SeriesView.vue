@@ -2,7 +2,7 @@
   <DataGrid
     title="Gundam Series"
     :columnDefs="columnDefs"
-    :rowData="series"
+    :rowData="seriesStore.series"
   >
     <template #filters>
       <input
@@ -18,9 +18,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import DataGrid from '../components/DataGrid.vue'
-import { Series, ApiResponse } from '../types/gundam'
+import { useSeriesStore } from '../stores/seriesStore'
 
-const series = ref<Series[]>([])
+const seriesStore = useSeriesStore()
 const searchTerm = ref('')
 
 const columnDefs = [
@@ -31,30 +31,11 @@ const columnDefs = [
   { field: 'description', headerName: 'Description' }
 ]
 
-const fetchSeries = async () => {
-  try {
-    console.log('Fetching series...')
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/series`)
-    const result = await response.json() as ApiResponse<Series>
-    console.log('Received data:', result)
-    if (result.data && Array.isArray(result.data)) {
-      series.value = result.data
-    } else {
-      console.error('Invalid data format received:', result)
-      series.value = []
-    }
-  } catch (error) {
-    console.error('Error fetching series:', error)
-    series.value = []
-  }
-}
-
 const filterSeries = () => {
   // Implement filtering logic here
 }
 
-onMounted(() => {
-  console.log('Component mounted')
-  fetchSeries()
+onMounted(async () => {
+  await seriesStore.fetchSeries()
 })
 </script>

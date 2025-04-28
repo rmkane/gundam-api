@@ -8,6 +8,7 @@ import {
   SeriesListResponseSchema,
   SeriesResponseSchema,
   UpdateSeriesResponseSchema,
+  UpdateSeriesSchema,
 } from '../schemas/index.js'
 import { BooleanParamSchema, NumberParamSchema } from '../schemas/request/query.js'
 import {
@@ -137,7 +138,7 @@ const updateSeriesRoute = createRoute({
     body: {
       content: {
         'application/json': {
-          schema: UpdateSeriesResponseSchema,
+          schema: UpdateSeriesSchema,
         },
       },
     },

@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { db } from '../db/index.js'
 import { pilot, series } from '../db/schemas/index.js'
 import { CreatePilotSchema, UpdatePilotSchema } from '../schemas/index.js'
+import { getIO } from '../socket.js'
 import { formatDates } from '../utils/format-dates.js'
 
 type CreatePilotData = z.infer<typeof CreatePilotSchema>
@@ -69,8 +70,13 @@ export const createPilot = async (data: CreatePilotData) => {
 
   const result = await db.insert(pilot).values(data).returning()
   const newPilot = result[0]
+  const formattedPilot = formatDates(newPilot)
+
+  // Emit WebSocket event for new pilot
+  getIO().emit('pilot:create', formattedPilot)
+
   return {
-    data: formatDates(newPilot),
+    data: formattedPilot,
     status: 201,
     headers: { Location: `/api/v1/pilots/${newPilot.id}` },
   }
@@ -112,7 +118,12 @@ export const updatePilot = async (id: number, data: UpdatePilotData) => {
     return { error: 'Pilot has been deleted', status: 410 }
   }
 
-  return { data: formatDates(updatedPilot), status: 200 }
+  const formattedPilot = formatDates(updatedPilot)
+
+  // Emit WebSocket event for updated pilot
+  getIO().emit('pilot:update', formattedPilot)
+
+  return { data: formattedPilot, status: 200 }
 }
 
 export const deletePilot = async (id: number) => {
@@ -128,5 +139,8 @@ export const deletePilot = async (id: number) => {
     return { error: 'Pilot not found', status: 404 }
   }
 
-  return { data: { message: 'Pilot deleted successfully' }, status: 200 }
+  // Emit WebSocket event for deleted pilot
+  getIO().emit('pilot:delete', id)
+
+  return { data: formatDates(result[0]), status: 200 }
 }

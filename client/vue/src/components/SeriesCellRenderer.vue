@@ -1,25 +1,25 @@
 <template>
-  <span v-if="isLoading">Loading...</span>
+  <span v-if="seriesStore.isLoading">Loading...</span>
   <span v-else>{{ seriesName }}</span>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import { useSeries } from '../composables/useSeries'
+import { useSeriesStore } from '../stores/seriesStore'
 
 const props = defineProps<{
   params: any
 }>()
 
-const { getSeriesName, fetchAllSeries, isLoading } = useSeries()
+const seriesStore = useSeriesStore()
 const seriesName = ref('')
 
 const updateSeriesName = () => {
-  seriesName.value = getSeriesName(props.params.value)
+  const series = seriesStore.getSeriesById(props.params.value)
+  seriesName.value = series?.name || 'Unknown'
 }
 
-onMounted(async () => {
-  await fetchAllSeries()
+onMounted(() => {
   updateSeriesName()
 })
 

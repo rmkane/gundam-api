@@ -11,14 +11,14 @@
         class="ag-theme-quartz"
         style="height: 600px; width: 100%"
         :columnDefs="columnDefs"
-        :rowData="rowData"
         :defaultColDef="defaultColDef"
+        :enableCellTextSelection="true"
+        :modules="modules"
         :pagination="true"
         :paginationPageSize="10"
         :paginationPageSizeSelector="[10, 25, 50, 100]"
-        :enableCellTextSelection="true"
+        :rowData="rowData"
         :rowSelection="'single'"
-        :modules="modules"
         @grid-ready="onGridReady"
       />
     </div>
@@ -29,72 +29,93 @@
 import { ref, watch, onMounted } from 'vue'
 import {
   ClientSideRowModelModule,
-  GridApi,
-  ModuleRegistry,
-  ColumnApi,
-  GridReadyEvent,
   ColDef,
+  ColumnApi,
+  CustomFilterModule,
+  DateFilterModule,
+  GridApi,
   GridOptions,
-  ValidationModule,
+  GridReadyEvent,
+  ModuleRegistry,
+  NumberFilterModule,
   PaginationModule,
   RowSelectionModule,
   TextFilterModule,
-  NumberFilterModule,
-  DateFilterModule,
-  CustomFilterModule
+  ValidationModule,
 } from 'ag-grid-community'
 
 // Register required modules
 ModuleRegistry.registerModules([
   ClientSideRowModelModule,
-  ValidationModule,
+  CustomFilterModule,
+  DateFilterModule,
+  NumberFilterModule,
   PaginationModule,
   RowSelectionModule,
   TextFilterModule,
-  NumberFilterModule,
-  DateFilterModule,
-  CustomFilterModule
+  ValidationModule,
 ])
 
 const modules = [
   ClientSideRowModelModule,
-  ValidationModule,
+  CustomFilterModule,
+  DateFilterModule,
+  NumberFilterModule,
   PaginationModule,
   RowSelectionModule,
   TextFilterModule,
-  NumberFilterModule,
-  DateFilterModule,
-  CustomFilterModule
+  ValidationModule,
 ]
 
 const props = defineProps<{
-  title: string
   columnDefs: ColDef[]
   rowData: any[]
+  title: string
 }>()
 
 const gridApi = ref<GridApi | null>(null)
 const columnApi = ref<ColumnApi | null>(null)
 
 const defaultColDef: ColDef = {
-  sortable: true,
   filter: true,
-  resizable: true,
+  flex: 1,
   floatingFilter: true,
-  flex: 1
+  resizable: true,
+  sortable: true,
 }
 
 const onGridReady = (params: GridReadyEvent) => {
-  console.log('Grid ready')
   gridApi.value = params.api
   columnApi.value = params.columnApi
 }
 
 // Watch for changes in rowData
-watch(() => props.rowData, (newValue) => {
-  console.log('Row data updated in grid:', newValue)
-  if (gridApi.value && typeof gridApi.value.setRowData === 'function') {
-    gridApi.value.setRowData(newValue)
+watch(() => props.rowData, (newValue, oldValue) => {
+  if (!gridApi.value) return
+
+  // If it's the initial load, set the data
+  if (!oldValue || oldValue.length === 0) {
+    gridApi.value.setGridOption('rowData', newValue)
+    return
+  }
+
+  // Find added, updated, and removed items
+  const added = newValue.filter(item => !oldValue.find(old => old.id === item.id))
+  const removed = oldValue.filter(item => !newValue.find(newItem => newItem.id === item.id))
+  const updated = newValue.filter(item => {
+    const oldItem = oldValue.find(old => old.id === item.id)
+    return oldItem && JSON.stringify(oldItem) !== JSON.stringify(item)
+  })
+
+  // Apply transactions
+  if (added.length > 0) {
+    gridApi.value.applyTransaction({ add: added })
+  }
+  if (removed.length > 0) {
+    gridApi.value.applyTransaction({ remove: removed })
+  }
+  if (updated.length > 0) {
+    gridApi.value.applyTransaction({ update: updated })
   }
 }, { deep: true })
 

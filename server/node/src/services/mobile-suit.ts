@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { db } from '../db/index.js'
 import { mobileSuit, series } from '../db/schemas/index.js'
 import { CreateMobileSuitSchema, UpdateMobileSuitSchema } from '../schemas/index.js'
+import { getIO } from '../socket.js'
 import { formatDates } from '../utils/format-dates.js'
 
 type CreateMobileSuitData = z.infer<typeof CreateMobileSuitSchema>
@@ -73,8 +74,13 @@ export const createMobileSuit = async (data: CreateMobileSuitData) => {
 
   const result = await db.insert(mobileSuit).values(data).returning()
   const newMobileSuit = result[0]
+  const formattedMobileSuit = formatDates(newMobileSuit)
+
+  // Emit WebSocket event for new mobile suit
+  getIO().emit('mobileSuit:create', formattedMobileSuit)
+
   return {
-    data: formatDates(newMobileSuit),
+    data: formattedMobileSuit,
     status: 201,
     headers: { Location: `/api/v1/mobile-suits/${newMobileSuit.id}` },
   }
@@ -116,7 +122,12 @@ export const updateMobileSuit = async (id: number, data: UpdateMobileSuitData) =
     return { error: 'Mobile suit has been deleted', status: 410 }
   }
 
-  return { data: formatDates(updatedMobileSuit), status: 200 }
+  const formattedMobileSuit = formatDates(updatedMobileSuit)
+
+  // Emit WebSocket event for updated mobile suit
+  getIO().emit('mobileSuit:update', formattedMobileSuit)
+
+  return { data: formattedMobileSuit, status: 200 }
 }
 
 export const deleteMobileSuit = async (id: number) => {
@@ -132,5 +143,8 @@ export const deleteMobileSuit = async (id: number) => {
     return { error: 'Mobile suit not found', status: 404 }
   }
 
-  return { data: { message: 'Mobile suit deleted successfully' }, status: 200 }
+  // Emit WebSocket event for deleted mobile suit
+  getIO().emit('mobileSuit:delete', id)
+
+  return { data: formatDates(result[0]), status: 200 }
 }

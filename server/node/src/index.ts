@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -11,6 +12,7 @@ import { prettyJSON } from 'hono/pretty-json'
 import { staticContent } from './middleware/static.js'
 import { rootRouter } from './routes/root.js'
 import { v1Router } from './routes/v1.js'
+import { initializeSocket } from './socket.js'
 
 const app = new OpenAPIHono()
 
@@ -46,7 +48,9 @@ app.get('/docs', swaggerUI({ url: '/api/v1/openapi.json' }))
 // Start server
 const port = parseInt(process.env.PORT || '3000', 10)
 
-// eslint-disable-next-line no-console
+// Initialize WebSocket server
+initializeSocket()
+
 console.log(`Server is running on port ${port}`)
 
 serve({

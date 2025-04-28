@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { db } from '../db/index.js'
 import { mobileSuit, pilot, series } from '../db/schemas/index.js'
 import { CreateSeriesSchema, UpdateSeriesSchema } from '../schemas/index.js'
+import { getIO } from '../socket.js'
 import { formatDates } from '../utils/format-dates.js'
 
 type CreateSeriesData = z.infer<typeof CreateSeriesSchema>
@@ -40,8 +41,13 @@ export const createSeries = async (data: CreateSeriesData) => {
 
   const result = await db.insert(series).values(data).returning()
   const newSeries = result[0]
+  const formattedSeries = formatDates(newSeries)
+
+  // Emit WebSocket event
+  getIO().emit('series:create', formattedSeries)
+
   return {
-    data: formatDates(newSeries),
+    data: formattedSeries,
     status: 201,
     headers: { Location: `/api/v1/series/${newSeries.id}` },
   }
@@ -70,7 +76,12 @@ export const updateSeries = async (id: number, data: UpdateSeriesData) => {
     return { error: 'Series has been deleted', status: 410 }
   }
 
-  return { data: formatDates(updatedSeries), status: 200 }
+  const formattedSeries = formatDates(updatedSeries)
+
+  // Emit WebSocket event
+  getIO().emit('series:update', formattedSeries)
+
+  return { data: formattedSeries, status: 200 }
 }
 
 export const deleteSeries = async (id: number) => {
@@ -108,6 +119,9 @@ export const deleteSeries = async (id: number) => {
   if (result.length === 0) {
     return { error: 'Series not found', status: 404 }
   }
+
+  // Emit WebSocket event
+  getIO().emit('series:delete', id)
 
   return { data: formatDates(result[0]), status: 200 }
 }

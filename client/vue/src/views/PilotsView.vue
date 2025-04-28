@@ -2,7 +2,7 @@
   <DataGrid
     title="Gundam Pilots"
     :columnDefs="columnDefs"
-    :rowData="pilots"
+    :rowData="pilotStore.pilots"
   >
     <template #filters>
       <input
@@ -19,9 +19,11 @@
 import { ref, onMounted } from 'vue'
 import DataGrid from '../components/DataGrid.vue'
 import SeriesCellRenderer from '../components/SeriesCellRenderer.vue'
-import { Pilot, ApiResponse } from '../types/gundam'
+import { usePilotStore } from '../stores/pilotStore'
+import { useSeriesStore } from '../stores/seriesStore'
 
-const pilots = ref<Pilot[]>([])
+const pilotStore = usePilotStore()
+const seriesStore = useSeriesStore()
 const searchTerm = ref('')
 
 const columnDefs = [
@@ -36,30 +38,15 @@ const columnDefs = [
   }
 ]
 
-const fetchPilots = async () => {
-  try {
-    console.log('Fetching pilots...')
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/pilots`)
-    const result = await response.json() as ApiResponse<Pilot>
-    console.log('Received data:', result)
-    if (result.data && Array.isArray(result.data)) {
-      pilots.value = result.data
-    } else {
-      console.error('Invalid data format received:', result)
-      pilots.value = []
-    }
-  } catch (error) {
-    console.error('Error fetching pilots:', error)
-    pilots.value = []
-  }
-}
-
 const filterPilots = () => {
   // Implement filtering logic here
 }
 
-onMounted(() => {
-  console.log('Component mounted')
-  fetchPilots()
+onMounted(async () => {
+  // Fetch both pilots and series data
+  await Promise.all([
+    pilotStore.fetchPilots(),
+    seriesStore.fetchSeries()
+  ])
 })
 </script> 
