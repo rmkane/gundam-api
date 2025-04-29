@@ -1,32 +1,40 @@
-Name	Year Start	Year End	Universe	Abbreviation
-Mobile Suit Gundam	1979	1980	UC	MSG
-Mobile Suit Zeta Gundam	1985	1986	UC	Zeta / Z
-Mobile Suit Gundam ZZ	1986	1987	UC	ZZ
-Mobile Suit Gundam: Char's Counterattack	1988	1988	UC	CCA
-Mobile Suit Gundam 0080: War in the Pocket	1989	1989	UC	0080
-Mobile Suit Gundam F91	1991	1991	UC	F91
-Mobile Suit Gundam 0083: Stardust Memory	1991	1992	UC	0083
-Mobile Suit Victory Gundam	1993	1994	UC	V
-Mobile Fighter G Gundam	1994	1995	Future Century (AU)	G
-Mobile Suit Gundam Wing	1995	1996	After Colony (AU)	GW
-Gundam Wing: Endless Waltz	1997	1997	After Colony (AU)	EW
-After War Gundam X	1996	1996	After War (AU)	X
-Turn A Gundam	1999	2000	Correct Century (AU)	Turn A
-Mobile Suit Gundam SEED	2002	2003	Cosmic Era (AU)	SEED
-Mobile Suit Gundam SEED Destiny	2004	2005	Cosmic Era (AU)	Destiny
-Mobile Suit Gundam 00	2007	2009	Anno Domini (AU)	00
-Mobile Suit Gundam Unicorn	2010	2014	UC	Unicorn
-Mobile Suit Gundam AGE	2011	2012	Advanced Generation (AU)	AGE
-Gundam Build Fighters	2013	2014	Build Fighters (AU)	GBF
-Gundam Build Fighters Try	2014	2015	Build Fighters (AU)	GBFT
-Mobile Suit Gundam: Iron-Blooded Orphans	2015	2017	Post Disaster (AU)	IBO
-Mobile Suit Gundam Thunderbolt	2015	2017	UC	Thunderbolt
-Mobile Suit Gundam: The Origin	2015	2018	UC	Origin
-Gundam Build Divers	2018	2018	Build Divers (AU)	GBD
-Mobile Suit Gundam Narrative	2018	2018	UC	NT
-Gundam Build Divers Re:RISE	2019	2020	Build Divers (AU)	GBDR
-Mobile Suit Gundam: Hathaway	2021	Ongoing	UC	Hathaway
-Mobile Suit Gundam: Cucuruz Doan's Island	2022	2022	UC	Doan's Island
-Mobile Suit Gundam: The Witch from Mercury	2022	2023	Ad Stella (AU)	WfM
-Gundam SEED FREEDOM	2024	2024	Cosmic Era (AU)	SEED Freedom
-Mobile Suit Gundam Requiem for Vengeance	2024	2024	UC	RFV
+Name	Year Start	Year End	Universe	Abbreviation	Format	Episodes	Runtime	Director	Studio	Status	Type
+Mobile Suit Gundam	1979	1980	UC	MSG	TV	43	24 min	Yoshiyuki Tomino	Sunrise	Completed	Main Series
+Mobile Suit Zeta Gundam	1985	1986	UC	Zeta / Z	TV	50	24 min	Yoshiyuki Tomino	Sunrise	Completed	Main Series
+Mobile Suit Gundam ZZ	1986	1987	UC	ZZ	TV	47	24 min	Yoshiyuki Tomino	Sunrise	Completed	Main Series
+Mobile Suit Gundam: Char's Counterattack	1988	1988	UC	CCA	Movie	1	120 min	Yoshiyuki Tomino	Sunrise	Completed	Main Series
+Mobile Suit Gundam 0080: War in the Pocket	1989	1989	UC	0080	OVA	6	30 min	Fumihiko Takayama	Sunrise	Completed	Side Story
+Mobile Suit Gundam F91	1991	1991	UC	F91	Movie	1	120 min	Yoshiyuki Tomino	Sunrise	Completed	Main Series
+Mobile Suit Gundam 0083: Stardust Memory	1991	1992	UC	0083	OVA	13	30 min	Mitsuko Kase	Sunrise	Completed	Side Story
+Mobile Suit Victory Gundam	1993	1994	UC	V	TV	51	24 min	Yoshiyuki Tomino	Sunrise	Completed	Main Series
+Mobile Fighter G Gundam	1994	1995	Future Century (AU)	G	TV	49	24 min	Yasuhiro Imagawa	Sunrise	Completed	Main Series
+Mobile Suit Gundam Wing	1995	1996	After Colony (AU)	GW	TV	49	24 min	Masashi Ikeda	Sunrise	Completed	Main Series
+Gundam Wing: Endless Waltz	1997	1997	After Colony (AU)	EW	OVA	3	30 min	Yasuhiro Imagawa	Sunrise	Completed	Side Story
+After War Gundam X	1996	1996	After War (AU)	X	TV	39	24 min	Shinji Takamatsu	Sunrise	Completed	Main Series
+Turn A Gundam	1999	2000	Correct Century (AU)	Turn A	TV	50	24 min	Yoshiyuki Tomino	Sunrise	Completed	Main Series
+Mobile Suit Gundam SEED	2002	2003	Cosmic Era (AU)	SEED	TV	50	24 min	Mitsuo Fukuda	Sunrise	Completed	Main Series
+Mobile Suit Gundam SEED Destiny	2004	2005	Cosmic Era (AU)	Destiny	TV	50	24 min	Mitsuo Fukuda	Sunrise	Completed	Main Series
+Mobile Suit Gundam 00	2007	2009	Anno Domini (AU)	00	TV	50	24 min	Seiji Mizushima	Sunrise	Completed	Main Series
+Mobile Suit Gundam Unicorn	2010	2014	UC	Unicorn	OVA	7	60 min	Kazuhiro Furuhashi	Sunrise	Completed	Side Story
+Mobile Suit Gundam AGE	2011	2012	Advanced Generation (AU)	AGE	TV	49	24 min	Susumu Yamaguchi	Sunrise	Completed	Main Series
+Gundam Build Fighters	2013	2014	Build Fighters (AU)	GBF	TV	25	24 min	Kenji Nagasaki	Sunrise	Completed	Build Series
+Gundam Build Fighters Try	2014	2015	Build Fighters (AU)	GBFT	TV	25	24 min	Kenji Nagasaki	Sunrise	Completed	Build Series
+Mobile Suit Gundam: Iron-Blooded Orphans	2015	2017	Post Disaster (AU)	IBO	TV	50	24 min	Tatsuyuki Nagai	Sunrise	Completed	Main Series
+Mobile Suit Gundam Thunderbolt	2015	2017	UC	Thunderbolt	OVA	8	30 min	Kou Matsuo	Sunrise	Completed	Side Story
+Mobile Suit Gundam: The Origin	2015	2018	UC	Origin	OVA	6	60 min	Yoshikazu Yasuhiko	Sunrise	Completed	Side Story
+Gundam Build Divers	2018	2018	Build Divers (AU)	GBD	TV	25	24 min	Shinya Watada	Sunrise	Completed	Build Series
+Mobile Suit Gundam Narrative	2018	2018	UC	NT	Movie	1	90 min	Yoshizumi Toshikazu	Sunrise	Completed	Side Story
+Gundam Build Divers Re:RISE	2019	2020	Build Divers (AU)	GBDR	TV	26	24 min	Shinya Watada	Sunrise	Completed	Build Series
+Mobile Suit Gundam: Hathaway	2021	Ongoing	UC	Hathaway	Movie	1	95 min	Shukou Murase	Sunrise	Ongoing	Side Story
+Mobile Suit Gundam: Cucuruz Doan's Island	2022	2022	UC	Doan's Island	Movie	1	110 min	Yoshikazu Yasuhiko	Sunrise	Completed	Side Story
+Mobile Suit Gundam: The Witch from Mercury	2022	2023	Ad Stella (AU)	WfM	TV	24	24 min	Hiroshi Kobayashi	Sunrise	Completed	Main Series
+Gundam SEED FREEDOM	2024	2024	Cosmic Era (AU)	SEED Freedom	Movie	1	120 min	Mitsuo Fukuda	Sunrise	Announced	Side Story
+Mobile Suit Gundam Requiem for Vengeance	2024	2024	UC	RFV	OVA	6	30 min	Erasmus Brosdau	Sunrise	Announced	Side Story
+Mobile Suit Gundam: The 08th MS Team	1996	1999	UC	08th MS Team	OVA	12	30 min	Takeyuki Kanda	Sunrise	Completed	Side Story
+Mobile Suit Gundam MS IGLOO	2004	2009	UC	MS IGLOO	OVA	9	30 min	Takashi Imanishi	Sunrise	Completed	Side Story
+Mobile Suit Gundam 00: A Wakening of the Trailblazer	2010	2010	Anno Domini (AU)	00 Movie	Movie	1	120 min	Seiji Mizushima	Sunrise	Completed	Side Story
+Mobile Suit Gundam Unicorn RE:0096	2016	2016	UC	Unicorn RE:0096	TV	22	24 min	Kazuhiro Furuhashi	Sunrise	Completed	Compilation
+Mobile Suit Gundam: Twilight Axis	2017	2017	UC	Twilight Axis	OVA	6	10 min	Seiji Mizushima	Sunrise	Completed	Side Story
+Mobile Suit Gundam: The Origin - Advent of the Red Comet	2019	2019	UC	Origin Red Comet	TV	13	24 min	Yoshikazu Yasuhiko	Sunrise	Completed	Compilation
+Mobile Suit Gundam: The Witch from Mercury - Prologue	2022	2022	Ad Stella (AU)	WfM Prologue	Special	1	24 min	Hiroshi Kobayashi	Sunrise	Completed	Prologue
+Mobile Suit Gundam: The Witch from Mercury - Special Edition	2023	2023	Ad Stella (AU)	WfM Special	Special	1	90 min	Hiroshi Kobayashi	Sunrise	Completed	Compilation
