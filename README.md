@@ -92,11 +92,14 @@ See the [client README](client/vue/README.md) for detailed setup instructions.
 
 1. Clone the repository
 2. Copy environment files:
+
    ```bash
    cp server/node/.env.example server/node/.env
    cp client/vue/.env.example client/vue/.env
    ```
+
 3. Start the development environment:
+
    ```bash
    make dev
    ```
